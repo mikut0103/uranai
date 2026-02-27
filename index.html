@@ -2,476 +2,964 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>✨ 誕生日占い ✨</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✈️ Tabisora - 旅のしおりメーカー</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Pacifico&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --rose:#c06080; --rose-light:#e8a0b8; --rose-dark:#8a3a55;
-  --gold:#c9a040; --gold-light:#e8cc88; --gold-pale:#f7edcc;
-  --cream:#fdf6ee; --cream2:#faf0e6;
-  --deep:#2e1520; --deep2:#4a2535;
-  --lavender:#c8b8d8; --sage:#a8c0b0; --blush:#f5d0dc; --pearl:#f8f4f0;
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
-  background:var(--cream);
-  font-family:'Cormorant Garamond','Noto Serif JP',Georgia,serif;
-  min-height:100vh; overflow-x:hidden;
-  color:var(--deep); -webkit-font-smoothing:antialiased;
-}
-body::before{
-  content:''; position:fixed; inset:0;
-  background:
-    radial-gradient(ellipse at 15% 10%,rgba(192,96,128,.14) 0%,transparent 45%),
-    radial-gradient(ellipse at 85% 85%,rgba(201,160,64,.12) 0%,transparent 45%),
-    radial-gradient(ellipse at 70% 5%,rgba(200,184,216,.18) 0%,transparent 40%),
-    radial-gradient(ellipse at 5% 80%,rgba(168,192,176,.12) 0%,transparent 35%),
-    radial-gradient(ellipse at 50% 50%,rgba(245,208,220,.08) 0%,transparent 60%);
-  pointer-events:none; z-index:0;
-}
-
-/* === LAYOUT === */
-.container{max-width:900px;margin:0 auto;padding:clamp(24px,5vw,60px) clamp(16px,4vw,32px);position:relative;z-index:1;}
-
-/* === PARTICLES === */
-.particle{position:fixed;pointer-events:none;z-index:0;animation:floatUp linear infinite;opacity:0;font-size:clamp(.7rem,2vw,1.1rem);}
-@keyframes floatUp{0%{transform:translateY(105vh) rotate(0deg);opacity:0;}8%{opacity:.45;}88%{opacity:.2;}100%{transform:translateY(-8vh) rotate(400deg);opacity:0;}}
-
-/* === HEADER === */
-header{text-align:center;margin-bottom:clamp(36px,6vw,64px);animation:fadeDown 1.2s cubic-bezier(.16,1,.3,1) forwards;}
-.header-crown{font-size:clamp(2rem,5vw,2.8rem);display:block;margin-bottom:6px;filter:drop-shadow(0 2px 8px rgba(201,160,64,.5));}
-.header-ornament{display:flex;align-items:center;justify-content:center;gap:10px;font-size:.65rem;letter-spacing:.6em;color:var(--gold);margin-bottom:14px;}
-.header-ornament-line{width:clamp(30px,8vw,70px);height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-h1{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,8vw,4.4rem);font-weight:400;line-height:1.1;color:var(--deep);margin-bottom:8px;text-shadow:0 2px 20px rgba(192,96,128,.15);}
-h1 em{font-style:italic;color:var(--rose);}
-.subtitle{font-size:clamp(.75rem,2.5vw,.95rem);color:var(--gold);letter-spacing:.4em;font-weight:300;margin-bottom:18px;}
-.header-desc{font-size:clamp(.85rem,2.5vw,1rem);color:#7a4a60;line-height:1.9;max-width:480px;margin:0 auto;}
-.divider{display:flex;align-items:center;gap:12px;margin:18px auto;width:fit-content;}
-.d-line{width:clamp(40px,10vw,80px);height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
-.d-line.r{background:linear-gradient(270deg,transparent,var(--gold));}
-.d-gem{color:var(--gold);font-size:.55rem;}
-
-/* === INPUT CARD === */
-.input-card{
-  background:linear-gradient(145deg,#fff 0%,var(--pearl) 100%);
-  border-radius:clamp(18px,4vw,28px);
-  padding:clamp(28px,6vw,52px) clamp(22px,6vw,52px);
-  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 48px rgba(46,21,32,.10),0 2px 12px rgba(192,96,128,.12),0 0 0 1px rgba(201,160,64,.18);
-  margin-bottom:clamp(28px,5vw,48px);
-  animation:fadeUp 1s cubic-bezier(.16,1,.3,1) .25s forwards; opacity:0;
-  position:relative; overflow:hidden;
-}
-.input-card::before{content:'✦';position:absolute;top:14px;left:18px;color:var(--gold-light);font-size:.7rem;opacity:.6;}
-.input-card::after{content:'✦';position:absolute;bottom:14px;right:18px;color:var(--gold-light);font-size:.7rem;opacity:.6;}
-.input-label{display:block;font-size:clamp(.72rem,2vw,.82rem);letter-spacing:.3em;text-transform:uppercase;color:var(--rose);margin-bottom:14px;font-weight:500;}
-.date-group{display:grid;grid-template-columns:2fr 1.4fr 1.4fr;gap:clamp(8px,2vw,14px);margin-bottom:clamp(20px,4vw,30px);}
-.select-wrap{position:relative;}
-.select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:.75rem;pointer-events:none;}
-.date-group select{width:100%;padding:clamp(12px,3vw,16px) clamp(12px,3vw,20px);padding-right:32px;border:1.5px solid rgba(201,160,64,.28);border-radius:clamp(10px,2vw,14px);background:var(--cream);font-family:'Cormorant Garamond','Noto Serif JP',serif;font-size:clamp(1rem,3vw,1.15rem);color:var(--deep);outline:none;-webkit-appearance:none;appearance:none;transition:border-color .3s,box-shadow .3s,background .2s;cursor:pointer;}
-.date-group select:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(192,96,128,.12);background:#fff;}
-.btn-main{width:100%;padding:clamp(16px,4vw,20px);background:linear-gradient(135deg,var(--rose) 0%,#aa4468 50%,var(--rose-dark) 100%);color:#fff;border:none;border-radius:clamp(12px,3vw,16px);font-family:'Playfair Display',serif;font-size:clamp(1.05rem,3vw,1.2rem);font-style:italic;letter-spacing:.12em;cursor:pointer;box-shadow:0 4px 24px rgba(192,96,128,.42),0 1px 0 rgba(255,255,255,.2) inset;transition:transform .25s,box-shadow .3s;position:relative;overflow:hidden;}
-.btn-main::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.15) 50%,transparent 100%);transform:translateX(-100%);transition:transform .6s;}
-.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(192,96,128,.52);}
-.btn-main:hover::before{transform:translateX(100%);}
-.btn-main:active{transform:translateY(0);}
-
-/* === RESULTS === */
-#results{display:none;}
-#results.show{display:block;animation:fadeUp .8s ease forwards;}
-.result-header{text-align:center;margin-bottom:clamp(24px,5vw,44px);}
-.result-badge{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--deep);font-size:.68rem;letter-spacing:.4em;padding:6px 20px;border-radius:50px;margin-bottom:14px;font-weight:500;box-shadow:0 2px 12px rgba(201,160,64,.3);}
-.result-header h2{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,5vw,2.4rem);font-weight:400;color:var(--deep);margin-bottom:8px;}
-#birthday-display{font-size:clamp(.9rem,2.5vw,1.05rem);color:var(--gold);letter-spacing:.35em;}
-
-/* === FORTUNE GRID === */
-.fortune-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(14px,3vw,22px);margin-bottom:clamp(20px,4vw,32px);}
-.fortune-card{background:linear-gradient(150deg,#fff 0%,var(--pearl) 100%);border-radius:clamp(16px,3vw,22px);padding:clamp(20px,4vw,30px) clamp(18px,4vw,28px);box-shadow:0 1px 0 rgba(255,255,255,.95) inset,0 6px 28px rgba(46,21,32,.07),0 0 0 1px rgba(201,160,64,.14);position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s;}
-.fortune-card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 12px 40px rgba(46,21,32,.12),0 0 0 1px rgba(201,160,64,.2);}
-.fortune-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--card-color,var(--rose)),var(--card-color2,var(--gold)));}
-.fortune-card::after{content:attr(data-bg-icon);position:absolute;bottom:-10px;right:-4px;font-size:5.5rem;opacity:.04;pointer-events:none;line-height:1;transform:rotate(-8deg);}
-.card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
-.card-icon-wrap{width:clamp(36px,8vw,44px);height:clamp(36px,8vw,44px);border-radius:50%;background:linear-gradient(135deg,var(--card-color,var(--rose)),var(--card-color2,var(--gold)));display:flex;align-items:center;justify-content:center;font-size:clamp(1rem,3vw,1.3rem);flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.12);}
-.card-meta{flex:1;}
-.card-region{font-size:clamp(.65rem,1.8vw,.73rem);letter-spacing:.28em;text-transform:uppercase;color:var(--card-color,var(--rose));font-weight:500;margin-bottom:2px;}
-.card-system{font-family:'Playfair Display',serif;font-size:clamp(.9rem,2.5vw,1.05rem);font-weight:400;color:var(--deep);}
-.card-result{font-size:clamp(1.05rem,3vw,1.3rem);font-weight:600;color:var(--deep);margin-bottom:8px;line-height:1.35;}
-.card-desc{font-size:clamp(.85rem,2.2vw,.97rem);color:#6a3a50;line-height:1.75;font-weight:300;}
-.card-lucky{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(201,160,64,.3);font-size:clamp(.75rem,2vw,.85rem);color:var(--gold);}
-.fortune-card.wide{grid-column:1/-1;}
-
-/* === SUMMARY CARD === */
-.summary-card{background:linear-gradient(145deg,var(--deep) 0%,var(--deep2) 60%,#6b2848 100%);border-radius:clamp(18px,4vw,28px);padding:clamp(32px,6vw,52px) clamp(24px,6vw,52px);color:#fff;text-align:center;position:relative;overflow:hidden;box-shadow:0 16px 60px rgba(46,21,32,.35),0 0 0 1px rgba(201,160,64,.2);margin-bottom:clamp(20px,4vw,30px);}
-.deco-circle{position:absolute;border-radius:50%;background:rgba(201,160,64,.06);pointer-events:none;}
-.deco-circle.c1{width:300px;height:300px;top:-120px;right:-80px;}
-.deco-circle.c2{width:200px;height:200px;bottom:-80px;left:-60px;}
-.summary-card .top-tag{display:inline-block;border:1px solid rgba(201,160,64,.45);color:var(--gold-light);font-size:.65rem;letter-spacing:.5em;padding:5px 18px;border-radius:50px;margin-bottom:18px;}
-.summary-card h3{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:400;font-style:italic;color:var(--blush);margin-bottom:14px;}
-.fortune-stars{font-size:clamp(1rem,3vw,1.5rem);color:var(--gold);letter-spacing:.4em;margin:12px 0 20px;animation:pulseGold 3s ease-in-out infinite;}
-.summary-card p{font-size:clamp(.92rem,2.5vw,1.07rem);line-height:1.95;color:rgba(255,255,255,.84);max-width:640px;margin:0 auto;}
-
-/* === ACTION BUTTONS === */
-.action-bar{display:flex;gap:clamp(10px,3vw,16px);justify-content:center;flex-wrap:wrap;margin-top:clamp(20px,4vw,32px);padding-bottom:clamp(20px,4vw,40px);}
-.btn-action{display:flex;align-items:center;gap:8px;padding:clamp(12px,3vw,15px) clamp(22px,5vw,32px);border-radius:50px;cursor:pointer;font-family:'Playfair Display',serif;font-size:clamp(.9rem,2.5vw,1rem);letter-spacing:.08em;transition:transform .25s,box-shadow .25s;border:none;white-space:nowrap;touch-action:manipulation;}
-.btn-action:hover{transform:translateY(-2px);}
-.btn-action:active{transform:translateY(0);}
-.btn-print{background:linear-gradient(135deg,var(--gold) 0%,#a8820a 100%);color:var(--deep);box-shadow:0 4px 20px rgba(201,160,64,.38);}
-.btn-print:hover{box-shadow:0 8px 28px rgba(201,160,64,.5);}
-.btn-reset{background:transparent;color:var(--rose);border:1.5px solid rgba(192,96,128,.4)!important;box-shadow:0 2px 12px rgba(192,96,128,.1);}
-.btn-reset:hover{background:rgba(192,96,128,.06);box-shadow:0 6px 20px rgba(192,96,128,.2);}
-
-/* === ANIMATIONS === */
-@keyframes fadeDown{from{opacity:0;transform:translateY(-28px);}to{opacity:1;transform:translateY(0);}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
-@keyframes cardIn{from{opacity:0;transform:translateY(24px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-@keyframes pulseGold{0%,100%{opacity:.6;transform:scale(1);}50%{opacity:1;transform:scale(1.1);}}
-
-/* === PRINT === */
-@media print{
-  body{background:white!important;}
-  body::before,body::after,.particle,.action-bar,.input-card{display:none!important;}
-  #results{display:block!important;}
-  .fortune-grid{grid-template-columns:repeat(2,1fr)!important;gap:12px!important;}
-  .fortune-card{box-shadow:none!important;border:1px solid #e0d0d8!important;break-inside:avoid;}
-  .fortune-card:hover{transform:none!important;}
-  .summary-card{background:var(--deep)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid;}
-  .print-header{display:block!important;text-align:center;padding:20px 0 14px;border-bottom:2px solid var(--gold);margin-bottom:22px;}
-  .print-header h2{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--deep);}
-  .print-header p{color:var(--gold);font-size:.85rem;letter-spacing:.3em;margin-top:5px;}
-  header,.result-badge{display:none!important;}
-  .result-header{margin-bottom:0!important;}
-  .result-header h2,.fortune-stars{animation:none!important;}
-  .fortune-card::after{display:none;}
-}
-.print-header{display:none;}
-
-/* === MOBILE === */
-@media(max-width:560px){
-  .fortune-grid{grid-template-columns:1fr!important;}
-  .fortune-card.wide{grid-column:auto!important;}
-  .date-group{grid-template-columns:1fr 1fr;}
-  .date-group .select-year{grid-column:1/-1;}
-}
-@media(max-width:400px){
-  .date-group{grid-template-columns:1fr;}
-  .date-group .select-year{grid-column:auto;}
-}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;}}
-
-/* === CREDIT === */
-.credit{
-  text-align:center;
-  padding:clamp(14px,3vw,20px) 0 clamp(10px,2vw,14px);
-  font-family:'Cormorant Garamond','Noto Serif JP',serif;
-  position:relative;
-}
-.credit-inner{
-  display:inline-block;
-  padding:10px 28px;
-  border-top:1px solid rgba(201,160,64,.28);
-  border-bottom:1px solid rgba(201,160,64,.28);
-}
-.credit-title{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(.88rem,2.5vw,1.05rem);
-  font-style:italic;
-  color:var(--rose);
-  letter-spacing:.12em;
-  display:block;
-  margin-bottom:4px;
-}
-.credit-sub{
-  font-size:clamp(.72rem,1.8vw,.82rem);
-  color:var(--gold);
-  letter-spacing:.18em;
-  display:block;
-}
-.credit-gem{color:var(--gold);font-size:.55rem;margin:0 6px;}
-
-/* Print credit footer */
-.print-credit{display:none;}
-@media print{
-  .credit{display:none!important;}
-  .print-credit{
-    display:block!important;
-    text-align:center;
-    margin-top:28px;
-    padding-top:16px;
-    border-top:1px solid rgba(201,160,64,.5);
-    font-family:'Playfair Display',serif;
+  :root {
+    --sky-top: #0a1628;
+    --sky-mid: #1a3a6b;
+    --sky-low: #2e6eb5;
+    --horizon: #f4a460;
+    --sunrise: #ff7c5c;
+    --cloud: rgba(255,255,255,0.92);
+    --accent: #ffdd57;
+    --accent2: #ff6b9d;
+    --mint: #7fffd4;
+    --white: #fffef8;
   }
-  .print-credit-title{
-    font-style:italic;
-    font-size:1rem;
-    color:var(--rose);
-    letter-spacing:.1em;
-    display:block;
-    margin-bottom:4px;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--sky-low) 70%, #88c1e8 85%, #b8dff5 95%, #e8f4fb 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
   }
-  .print-credit-sub{
-    font-size:.78rem;
-    color:var(--gold);
-    letter-spacing:.2em;
-    display:block;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
+
+  /* Stars */
+  .stars {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    pointer-events: none;
+    z-index: 0;
   }
-}
+
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.2; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.3); }
+  }
+
+  /* Clouds */
+  .clouds-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.7;
+    animation: float-cloud linear infinite;
+  }
+
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .cloud::before { width: 70%; height: 160%; top: -50%; left: 10%; }
+  .cloud::after { width: 50%; height: 130%; top: -30%; right: 15%; }
+
+  @keyframes float-cloud {
+    from { transform: translateX(-300px); }
+    to { transform: translateX(calc(100vw + 300px)); }
+  }
+
+  /* Airplane */
+  .airplane {
+    position: fixed;
+    font-size: 2.5rem;
+    animation: fly 18s linear infinite;
+    z-index: 5;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    top: 18%;
+    pointer-events: none;
+  }
+
+  @keyframes fly {
+    0% { left: -100px; transform: rotate(5deg); }
+    50% { transform: rotate(-2deg); }
+    100% { left: calc(100vw + 100px); transform: rotate(5deg); }
+  }
+
+  /* Main Layout */
+  .container {
+    position: relative;
+    z-index: 10;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 60px 0 40px;
+    animation: fadeDown 0.8s ease;
+  }
+
+  .logo {
+    font-family: 'Pacifico', cursive;
+    font-size: 3rem;
+    color: var(--accent);
+    text-shadow: 0 4px 20px rgba(255,221,87,0.5), 0 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+  }
+
+  .tagline {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    margin-top: 6px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Form Card */
+  .form-card {
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    padding: 30px 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-title {
+    text-align: center;
+    color: white;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .field-group {
+    margin-bottom: 18px;
+  }
+
+  label {
+    display: block;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .label-emoji {
+    font-size: 1rem;
+    margin-right: 4px;
+  }
+
+  input, select, textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 14px;
+    padding: 13px 16px;
+    color: white;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: rgba(255,255,255,0.4);
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    background: rgba(255,255,255,0.22);
+    box-shadow: 0 0 20px rgba(255,221,87,0.2);
+  }
+
+  select option {
+    background: #1a3a6b;
+    color: white;
+  }
+
+  /* Theme Pills */
+  .theme-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    padding: 8px 14px;
+    border-radius: 100px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: 'Noto Sans JP', sans-serif;
+    user-select: none;
+  }
+
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #1a3a6b;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(255,221,87,0.4);
+  }
+
+  /* Transport Pills */
+  .transport-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .transport-pill {
+    flex: 1;
+    min-width: 70px;
+    text-align: center;
+    padding: 10px 8px;
+    border-radius: 14px;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-family: 'Noto Sans JP', sans-serif;
+    user-select: none;
+  }
+
+  .transport-pill .icon { font-size: 1.4rem; display: block; margin-bottom: 3px; }
+  .transport-pill:hover { border-color: var(--mint); }
+  .transport-pill.active {
+    background: var(--mint);
+    border-color: var(--mint);
+    color: #1a3a6b;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(127,255,212,0.3);
+  }
+
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    margin-top: 24px;
+    padding: 16px;
+    border: none;
+    border-radius: 100px;
+    background: linear-gradient(135deg, var(--accent), var(--sunrise));
+    color: #1a3a6b;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 30px rgba(255,221,87,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(255,221,87,0.55);
+  }
+
+  .submit-btn:hover::after { opacity: 1; }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* Loading */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 40px 0;
+    animation: fadeUp 0.5s ease;
+  }
+
+  .loading.show { display: block; }
+
+  .plane-loading {
+    font-size: 3rem;
+    animation: fly-loading 1.5s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  @keyframes fly-loading {
+    0%, 100% { transform: translateY(0) rotate(5deg); }
+    50% { transform: translateY(-20px) rotate(-5deg); }
+  }
+
+  .loading-text {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+    margin-top: 16px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  /* Itinerary (しおり) */
+  .itinerary {
+    display: none;
+    animation: fadeUp 0.8s ease;
+  }
+
+  .itinerary.show { display: block; }
+
+  .shiori-cover {
+    background: linear-gradient(145deg, #fff9e8, #ffe8d6);
+    border-radius: 24px 24px 0 0;
+    padding: 30px 24px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.15);
+  }
+
+  .shiori-cover::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at 70% 30%, rgba(255,107,157,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 30% 70%, rgba(255,221,87,0.15) 0%, transparent 50%);
+  }
+
+  .shiori-title {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.8rem;
+    color: var(--sunrise);
+    margin-bottom: 4px;
+    position: relative;
+  }
+
+  .shiori-subtitle {
+    font-size: 0.8rem;
+    color: #a08080;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    position: relative;
+  }
+
+  .shiori-emoji-row {
+    font-size: 2rem;
+    margin: 16px 0 8px;
+    position: relative;
+  }
+
+  .shiori-meta {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    position: relative;
+  }
+
+  .meta-badge {
+    background: rgba(255,107,157,0.12);
+    border: 1px solid rgba(255,107,157,0.3);
+    border-radius: 100px;
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    color: #c05080;
+    font-weight: 700;
+  }
+
+  .shiori-body {
+    background: #fffef8;
+    padding: 20px 20px 30px;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+
+  .day-section {
+    margin-bottom: 22px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .day-badge {
+    background: linear-gradient(135deg, var(--sunrise), #ff9a5c);
+    color: white;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 900;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .day-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #3a2a1a;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #ffb3c6, #ffd6a0, #b3f5de);
+    border-radius: 2px;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 14px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -17px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  .time-label {
+    font-size: 0.72rem;
+    color: #ff7c9c;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+  }
+
+  .activity-card {
+    background: white;
+    border-radius: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+    border-left: 3px solid var(--accent);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .activity-card:hover {
+    transform: translateX(3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .activity-name {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #2a1a0a;
+    margin-bottom: 3px;
+  }
+
+  .activity-desc {
+    font-size: 0.78rem;
+    color: #7a6a5a;
+    line-height: 1.5;
+  }
+
+  .activity-tags {
+    display: flex;
+    gap: 5px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    background: #fff3e0;
+    color: #e07020;
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-weight: 700;
+  }
+
+  .tips-section {
+    background: linear-gradient(135deg, #e8f8ff, #f0e8ff);
+    border-radius: 18px;
+    padding: 18px;
+    margin-top: 8px;
+    border: 1px dashed rgba(150,100,200,0.3);
+  }
+
+  .tips-title {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #6040b0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tip-item {
+    font-size: 0.8rem;
+    color: #5a4a7a;
+    padding: 5px 0;
+    border-bottom: 1px dashed rgba(150,100,200,0.2);
+    line-height: 1.5;
+  }
+
+  .tip-item:last-child { border-bottom: none; }
+
+  .divider {
+    text-align: center;
+    font-size: 1.2rem;
+    margin: 14px 0;
+    opacity: 0.5;
+  }
+
+  .back-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 100px;
+    background: transparent;
+    color: white;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .back-btn:hover {
+    background: rgba(255,255,255,0.15);
+    border-color: white;
+  }
+
+  /* Error */
+  .error-msg {
+    display: none;
+    background: rgba(255,80,80,0.2);
+    border: 1px solid rgba(255,80,80,0.4);
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: #ffaaaa;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 12px;
+  }
+
+  .error-msg.show { display: block; }
+
+  /* Responsive */
+  @media (max-width: 400px) {
+    .logo { font-size: 2.4rem; }
+    .form-card { padding: 24px 18px; }
+  }
 </style>
 </head>
 <body>
 
+<!-- Stars -->
+<div class="stars" id="stars"></div>
+
+<!-- Clouds -->
+<div class="clouds-container" id="clouds"></div>
+
+<!-- Flying airplane -->
+<div class="airplane">✈️</div>
+
 <div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">tabisora</div>
+    <div class="tagline">✨ 旅のしおりメーカー ✨</div>
+  </div>
 
-<header>
-  <span class="header-crown">👑</span>
-  <div class="header-ornament">
-    <div class="header-ornament-line"></div>
-    ✦ MYSTICAL ORACLE ✦
-    <div class="header-ornament-line" style="background:linear-gradient(270deg,transparent,var(--gold),transparent)"></div>
-  </div>
-  <h1><em>誕生日占い</em></h1>
-  <p class="subtitle">Birthday Fortune Telling</p>
-  <div class="divider">
-    <div class="d-line"></div>
-    <span class="d-gem">◆</span>
-    <div class="d-line r"></div>
-  </div>
-  <p class="header-desc">
-    世界7つの占術があなたの運命を紐解く<br>
-    <span style="font-size:.88em;opacity:.7;">西洋・東洋・インド・ケルト・エジプト・マヤ・数秘術</span>
-  </p>
-  <div class="credit" style="margin-top:22px;margin-bottom:0;">
-    <div class="credit-inner">
-      <span class="credit-title"><span class="credit-gem">✦</span>negaibi hibiki<span class="credit-gem">✦</span> original version</span>
-      <span class="credit-sub">Production supervision: Takahashi Miku</span>
-    </div>
-  </div>
-</header>
+  <!-- Form -->
+  <div class="form-card" id="formSection">
+    <div class="form-title">🗺️ 旅の情報を入力してね</div>
 
-<div class="input-card">
-  <label class="input-label">✦ &nbsp;あなたの生年月日を入力</label>
-  <div class="date-group">
-    <div class="select-wrap select-year">
-      <select id="year"><option value="">── 年 ──</option></select>
+    <div class="field-group">
+      <label><span class="label-emoji">📍</span>出発地</label>
+      <input type="text" id="departure" placeholder="例：東京、大阪、福岡..." />
     </div>
-    <div class="select-wrap">
-      <select id="month"><option value="">── 月 ──</option></select>
+
+    <div class="field-group">
+      <label><span class="label-emoji">🗓️</span>旅の期間</label>
+      <select id="duration">
+        <option value="">選んでね</option>
+        <option value="日帰り">日帰り（0泊1日）</option>
+        <option value="1泊2日">1泊2日</option>
+        <option value="2泊3日">2泊3日</option>
+        <option value="3泊4日">3泊4日</option>
+        <option value="4泊5日">4泊5日</option>
+        <option value="1週間">約1週間（6〜7日）</option>
+      </select>
     </div>
-    <div class="select-wrap">
-      <select id="day"><option value="">── 日 ──</option></select>
+
+    <div class="field-group">
+      <label><span class="label-emoji">🎨</span>旅のテーマ（複数OK）</label>
+      <div class="theme-pills" id="themePills">
+        <div class="pill" data-value="グルメ">🍜 グルメ</div>
+        <div class="pill" data-value="自然・絶景">🌄 自然・絶景</div>
+        <div class="pill" data-value="カフェ巡り">☕ カフェ巡り</div>
+        <div class="pill" data-value="歴史・文化">⛩️ 歴史・文化</div>
+        <div class="pill" data-value="インスタ映え">📸 インスタ映え</div>
+        <div class="pill" data-value="温泉・癒し">♨️ 温泉・癒し</div>
+        <div class="pill" data-value="アクティビティ">🏄 アクティビティ</div>
+        <div class="pill" data-value="ショッピング">🛍️ ショッピング</div>
+        <div class="pill" data-value="アニメ・ポップカルチャー">🎌 アニメ・ポップカルチャー</div>
+        <div class="pill" data-value="夜景・バー">🌃 夜景・バー</div>
+      </div>
     </div>
+
+    <div class="field-group">
+      <label><span class="label-emoji">🚗</span>移動方法</label>
+      <div class="transport-pills" id="transportPills">
+        <div class="transport-pill" data-value="✈️ 飛行機"><span class="icon">✈️</span>飛行機</div>
+        <div class="transport-pill" data-value="🚄 新幹線"><span class="icon">🚄</span>新幹線</div>
+        <div class="transport-pill" data-value="🚗 レンタカー"><span class="icon">🚗</span>レンタカー</div>
+        <div class="transport-pill" data-value="🚌 バス"><span class="icon">🚌</span>バス</div>
+        <div class="transport-pill" data-value="🚢 フェリー"><span class="icon">🚢</span>フェリー</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label><span class="label-emoji">🌍</span>行き先（任意）</label>
+      <input type="text" id="destination" placeholder="例：京都、北海道、沖縄、台湾..." />
+    </div>
+
+    <div class="field-group">
+      <label><span class="label-emoji">💬</span>ひとこと希望（任意）</label>
+      <textarea id="memo" rows="2" placeholder="例：女子旅2人、予算は1日1万円以内、自然が好き..."></textarea>
+    </div>
+
+    <button class="submit-btn" id="submitBtn" onclick="generatePlan()">
+      ✈️ しおりを作る！
+    </button>
+    <div class="error-msg" id="errorMsg"></div>
   </div>
-  <button class="btn-main" onclick="calculate()">✨ &nbsp;星に導かれた運命を見る&nbsp; ✨</button>
+
+  <!-- Loading -->
+  <div class="loading" id="loadingSection">
+    <div class="plane-loading">✈️</div>
+    <div class="loading-text">旅のしおりを作成中...</div>
+    <div class="loading-text" style="font-size:0.75rem; margin-top:6px;">✨ もうすぐ出発！</div>
+  </div>
+
+  <!-- Itinerary (しおり) -->
+  <div class="itinerary" id="itinerarySection">
+    <div id="shioriContent"></div>
+    <button class="back-btn" onclick="goBack()">← もう一度作る</button>
+  </div>
 </div>
-
-<div id="results">
-  <div class="print-header">
-    <h2>✦ 誕生日占い結果 ✦</h2>
-    <p id="print-date-label"></p>
-  </div>
-  <div class="result-header">
-    <div class="result-badge">✦ &nbsp;YOUR COSMIC READING&nbsp; ✦</div>
-    <h2>星々からのメッセージ</h2>
-    <div id="birthday-display"></div>
-  </div>
-  <div class="fortune-grid" id="fortune-grid"></div>
-  <div class="summary-card" id="summary-card">
-    <div class="deco-circle c1"></div>
-    <div class="deco-circle c2"></div>
-  </div>
-  <div class="action-bar">
-    <button class="btn-action btn-print" onclick="printResult()">🖨️ &nbsp;占い結果を印刷する</button>
-    <button class="btn-action btn-reset" onclick="resetForm()">↩ &nbsp;もう一度占う</button>
-  </div>
-  <!-- Credit in results section -->
-  <div class="credit">
-    <div class="credit-inner">
-      <span class="credit-title"><span class="credit-gem">✦</span>negaibi hibiki<span class="credit-gem">✦</span> original version</span>
-      <span class="credit-sub">Production supervision: Takahashi Miku</span>
-    </div>
-  </div>
-  <!-- Print-only footer credit -->
-  <div class="print-credit">
-    <span class="print-credit-title">✦ negaibi hibiki ✦ original version</span>
-    <span class="print-credit-sub">Production supervision: Takahashi Miku</span>
-  </div>
-</div>
-
-</div><!-- /container -->
 
 <script>
-// Particles
-[{s:'✦',l:4,d:0,dur:9},{s:'🌸',l:14,d:1.5,dur:7},{s:'✨',l:26,d:3,dur:11},{s:'🌙',l:42,d:.6,dur:8},{s:'⭐',l:58,d:2.2,dur:9.5},{s:'✦',l:73,d:4,dur:7.5},{s:'🌺',l:86,d:1,dur:12},{s:'💫',l:94,d:3.5,dur:8.5},{s:'✦',l:32,d:5.5,dur:10},{s:'🌟',l:67,d:.3,dur:6.5}].forEach(p=>{
-  const el=document.createElement('div');
-  el.className='particle'; el.textContent=p.s;
-  el.style.cssText=`left:${p.l}%;animation-delay:${p.d}s;animation-duration:${p.dur}s;`;
-  document.body.appendChild(el);
+// Generate stars
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 3 + 1;
+  s.style.cssText = `
+    left: ${Math.random() * 100}%;
+    top: ${Math.random() * 100}%;
+    width: ${size}px; height: ${size}px;
+    animation-delay: ${Math.random() * 4}s;
+    animation-duration: ${2 + Math.random() * 3}s;
+  `;
+  starsEl.appendChild(s);
+}
+
+// Generate clouds
+const cloudsEl = document.getElementById('clouds');
+const cloudConfigs = [
+  { w: 120, h: 40, top: '15%', dur: 25, delay: 0, opacity: 0.5 },
+  { w: 180, h: 55, top: '55%', dur: 35, delay: -8, opacity: 0.65 },
+  { w: 90, h: 30, top: '35%', dur: 20, delay: -5, opacity: 0.4 },
+  { w: 200, h: 60, top: '72%', dur: 40, delay: -15, opacity: 0.7 },
+  { w: 140, h: 45, top: '45%', dur: 30, delay: -20, opacity: 0.55 },
+];
+cloudConfigs.forEach(c => {
+  const el = document.createElement('div');
+  el.className = 'cloud';
+  el.style.cssText = `
+    width: ${c.w}px; height: ${c.h}px;
+    top: ${c.top};
+    opacity: ${c.opacity};
+    animation-duration: ${c.dur}s;
+    animation-delay: ${c.delay}s;
+  `;
+  cloudsEl.appendChild(el);
 });
 
-// Selects
-const Y=document.getElementById('year'),M=document.getElementById('month'),D=document.getElementById('day');
-for(let y=new Date().getFullYear();y>=1920;y--) Y.innerHTML+=`<option value="${y}">${y}年</option>`;
-for(let m=1;m<=12;m++) M.innerHTML+=`<option value="${m}">${m}月</option>`;
-for(let d=1;d<=31;d++) D.innerHTML+=`<option value="${d}">${d}日</option>`;
+// Pills selection
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', () => p.classList.toggle('active'));
+});
 
-// ======== DIVINATION ========
-function getWesternSign(month,day){
-  const s=[
-    {name:'♑ 山羊座',element:'土',planet:'土星',traits:'責任感が強く忍耐力があります。野心的で実用的な性格。人生を通じて着実に成功を積み重ねる力があります。',lucky:'ラッキーカラー: 茶・黒　　ラッキーナンバー: 8',start:[12,22],end:[1,19]},
-    {name:'♒ 水瓶座',element:'風',planet:'天王星',traits:'独創的で人道主義的。革新的なアイデアを持つ自由な精神の持ち主。集団の中で際立つ個性を発揮します。',lucky:'ラッキーカラー: 水色・銀　ラッキーナンバー: 11',start:[1,20],end:[2,18]},
-    {name:'♓ 魚座',element:'水',planet:'海王星',traits:'感受性が豊かで夢想的。深い共感力と芸術的才能を持ちます。直感に優れ霊的な繋がりを感じやすい魂。',lucky:'ラッキーカラー: 海緑・紫　ラッキーナンバー: 7',start:[2,19],end:[3,20]},
-    {name:'♈ 牡羊座',element:'火',planet:'火星',traits:'情熱的でエネルギッシュな先駆者。挑戦を恐れず率先して行動します。生まれながらのリーダーシップ。',lucky:'ラッキーカラー: 赤・オレンジ　ラッキーナンバー: 1',start:[3,21],end:[4,19]},
-    {name:'♉ 牡牛座',element:'土',planet:'金星',traits:'安定を愛し忠実で信頼できる存在。美的感覚と感覚的な喜びに恵まれています。豊かさを引き寄せる力。',lucky:'ラッキーカラー: 緑・ピンク　ラッキーナンバー: 6',start:[4,20],end:[5,20]},
-    {name:'♊ 双子座',element:'風',planet:'水星',traits:'知的好奇心旺盛で機知に富む。コミュニケーション能力が高く様々な分野に興味を持つ多才な性格。',lucky:'ラッキーカラー: 黄・水色　ラッキーナンバー: 5',start:[5,21],end:[6,20]},
-    {name:'♋ 蟹座',element:'水',planet:'月',traits:'愛情深く直感的。家族や愛する人への献身的な愛を持ちます。感情の豊かさと共感力が最大の魅力。',lucky:'ラッキーカラー: 白・銀　　ラッキーナンバー: 2',start:[6,21],end:[7,22]},
-    {name:'♌ 獅子座',element:'火',planet:'太陽',traits:'自信にあふれカリスマ的な存在感を放ちます。創造性と寛大さを持つ生まれながらの王者の魂。',lucky:'ラッキーカラー: 金・オレンジ　ラッキーナンバー: 1',start:[7,23],end:[8,22]},
-    {name:'♍ 乙女座',element:'土',planet:'水星',traits:'分析力が高く完璧主義。細部への配慮と実用的なアプローチで問題解決に優れた才能を発揮します。',lucky:'ラッキーカラー: 紺青・茶　ラッキーナンバー: 5',start:[8,23],end:[9,22]},
-    {name:'♎ 天秤座',element:'風',planet:'金星',traits:'調和と美を愛する外交官。バランス感覚に優れ公平さと優雅さで周囲を魅了する存在です。',lucky:'ラッキーカラー: ピンク・水色　ラッキーナンバー: 6',start:[9,23],end:[10,22]},
-    {name:'♏ 蠍座',element:'水',planet:'冥王星',traits:'強烈な情熱と深い洞察力を持つ神秘家。変容と再生の力を持ち物事の本質を見抜く力があります。',lucky:'ラッキーカラー: 深紅・黒　ラッキーナンバー: 8',start:[10,23],end:[11,21]},
-    {name:'♐ 射手座',element:'火',planet:'木星',traits:'自由を愛する哲学者。楽観主義と冒険心を持ち真実と知恵を探求する旅人として輝きます。',lucky:'ラッキーカラー: 紫・ターコイズ　ラッキーナンバー: 3',start:[11,22],end:[12,21]},
+document.querySelectorAll('.transport-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.transport-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+function getSelectedThemes() {
+  return Array.from(document.querySelectorAll('.pill.active')).map(p => p.dataset.value);
+}
+
+function getSelectedTransport() {
+  const active = document.querySelector('.transport-pill.active');
+  return active ? active.dataset.value : '';
+}
+
+async function generatePlan() {
+  const departure = document.getElementById('departure').value.trim();
+  const duration = document.getElementById('duration').value;
+  const themes = getSelectedThemes();
+  const transport = getSelectedTransport();
+  const destination = document.getElementById('destination').value.trim();
+  const memo = document.getElementById('memo').value.trim();
+  const errorEl = document.getElementById('errorMsg');
+
+  errorEl.classList.remove('show');
+
+  if (!departure) {
+    errorEl.textContent = '📍 出発地を入力してください！';
+    errorEl.classList.add('show'); return;
+  }
+  if (!duration) {
+    errorEl.textContent = '🗓️ 旅の期間を選んでください！';
+    errorEl.classList.add('show'); return;
+  }
+  if (themes.length === 0) {
+    errorEl.textContent = '🎨 テーマを1つ以上選んでください！';
+    errorEl.classList.add('show'); return;
+  }
+  if (!transport) {
+    errorEl.textContent = '🚗 移動方法を選んでください！';
+    errorEl.classList.add('show'); return;
+  }
+
+  document.getElementById('formSection').style.display = 'none';
+  document.getElementById('loadingSection').classList.add('show');
+
+  const prompt = `あなたは旅行プランナーです。以下の条件で旅のしおりをJSON形式で作成してください。
+
+条件：
+- 出発地: ${departure}
+- 行き先: ${destination || '（あなたが提案してください）'}
+- 期間: ${duration}
+- テーマ: ${themes.join('、')}
+- 移動方法: ${transport}
+- メモ: ${memo || 'なし'}
+
+必ず以下のJSON形式のみで返答してください（コードブロック不要）：
+{
+  "destination": "旅の目的地名",
+  "catchcopy": "この旅を表す一言キャッチコピー（20文字以内）",
+  "emoji": "この旅を表す絵文字3〜4個",
+  "days": [
+    {
+      "day": "1日目",
+      "title": "その日のテーマタイトル",
+      "schedule": [
+        {
+          "time": "9:00",
+          "place": "場所名",
+          "description": "説明（30文字程度）",
+          "tags": ["タグ1", "タグ2"]
+        }
+      ]
+    }
+  ],
+  "tips": [
+    "旅のtip1（持ち物・注意点・おすすめなど）",
+    "旅のtip2",
+    "旅のtip3"
+  ]
+}
+
+期間に応じた日数分のdaysを作成してください。各日4〜5つのscheduleを入れてください。`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    const text = data.content.map(b => b.text || '').join('');
+    let json;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      json = JSON.parse(clean);
+    } catch(e) {
+      throw new Error('プラン解析エラー');
+    }
+
+    renderShiori(json, { departure, duration, themes, transport });
+
+    document.getElementById('loadingSection').classList.remove('show');
+    document.getElementById('itinerarySection').classList.add('show');
+  } catch(e) {
+    document.getElementById('loadingSection').classList.remove('show');
+    document.getElementById('formSection').style.display = 'block';
+    errorEl.textContent = '😢 プランの生成に失敗しました。もう一度お試しください。';
+    errorEl.classList.add('show');
+  }
+}
+
+function getColorForDay(i) {
+  const colors = ['#ff7c5c', '#ff9a5c', '#ffb347', '#ff6b9d', '#a855f7'];
+  return colors[i % colors.length];
+}
+
+function renderShiori(data, meta) {
+  const colorSets = [
+    { border: '#ff7c5c', bg: '#fff5f2' },
+    { border: '#ffa040', bg: '#fff8f0' },
+    { border: '#ffb347', bg: '#fffbf0' },
+    { border: '#ff6b9d', bg: '#fff0f6' },
+    { border: '#9b59b6', bg: '#f8f0ff' },
   ];
-  const m=+month,d=+day;
-  for(const x of s){const[sm,sd]=x.start,[em,ed]=x.end;if((m===sm&&d>=sd)||(m===em&&d<=ed))return x;}
-  return s[0];
-}
-function getChineseZodiac(year){
-  const a=[
-    {name:'🐀 子（ねずみ）',traits:'知恵と機転に富む。チャンスを掴む直感と積極性を持つ社交的で魅力的な存在。',lucky:'ラッキーカラー: 赤・青　　ラッキーナンバー: 2, 3'},
-    {name:'🐂 丑（うし）',traits:'誠実で勤勉。忍耐強く信頼できる性格。決して諦めない強い意志と持久力があります。',lucky:'ラッキーカラー: 白・黄　　ラッキーナンバー: 1, 4'},
-    {name:'🐯 寅（とら）',traits:'勇敢でカリスマ的なリーダー。情熱と競争心を持ち困難に立ち向かう勇気があります。',lucky:'ラッキーカラー: 青・灰　　ラッキーナンバー: 1, 7'},
-    {name:'🐇 卯（うさぎ）',traits:'優雅で温和。芸術的センスと鋭い洞察力を持ちます。平和と美を愛する繊細な魂。',lucky:'ラッキーカラー: ピンク・紫　ラッキーナンバー: 3, 9'},
-    {name:'🐉 辰（たつ）',traits:'力強く魅力的なカリスマ。革新的な思想と行動力で大きな夢を現実にする力を持ちます。',lucky:'ラッキーカラー: 金・銀　　ラッキーナンバー: 1, 7'},
-    {name:'🐍 巳（へび）',traits:'知恵深く神秘的。直感と洗練された美意識を持つ思慮深い存在。深い思考力が武器。',lucky:'ラッキーカラー: 黒・赤　　ラッキーナンバー: 2, 8'},
-    {name:'🐎 午（うま）',traits:'自由奔放で情熱的。エネルギッシュで行動力があり人々を惹きつける魅力を放ちます。',lucky:'ラッキーカラー: 緑・黄　　ラッキーナンバー: 2, 3'},
-    {name:'🐑 未（ひつじ）',traits:'優しく思いやりがある芸術家気質。穏やかな外見の内に強い芯を持つ繊細な感性。',lucky:'ラッキーカラー: 緑・赤　　ラッキーナンバー: 2, 7'},
-    {name:'🐒 申（さる）',traits:'賢くユーモアに溢れる問題解決の天才。創造力と適応力でどんな状況も楽しく乗り越えます。',lucky:'ラッキーカラー: 白・金　　ラッキーナンバー: 4, 9'},
-    {name:'🐓 酉（とり）',traits:'几帳面で観察力が鋭い完璧主義者。自信にあふれた外見と几帳面な性格で信頼を集めます。',lucky:'ラッキーカラー: 金・茶　　ラッキーナンバー: 5, 7'},
-    {name:'🐕 戌（いぬ）',traits:'忠実で誠実な守護者。正義感が強く愛する人のために尽くす献身的な性格の持ち主。',lucky:'ラッキーカラー: 赤・緑　　ラッキーナンバー: 3, 4'},
-    {name:'🐷 亥（いのしし）',traits:'誠実で勇気ある勤勉家。純粋な心と寛大さを持ち一度決めたことは必ずやり遂げます。',lucky:'ラッキーカラー: 黄・灰　　ラッキーナンバー: 2, 6'},
-  ];
-  return a[(+year-4)%12];
-}
-function getNumerology(year,month,day){
-  const reduce=n=>{while(n>9&&n!==11&&n!==22&&n!==33)n=String(n).split('').reduce((a,b)=>a+parseInt(b),0);return n;};
-  const num=reduce(String(year).split('').reduce((a,b)=>a+parseInt(b),0)+ +month+ +day);
-  const m={
-    1:{title:'ライフパス 1 — 先駆者',traits:'生まれながらのリーダー。独立心と創造性で道を切り拓きます。個性と意志力で新しい世界を作る力を持つ魂。',lucky:'ラッキーデイ: 日曜日　ラッキーストーン: ルビー'},
-    2:{title:'ライフパス 2 — 協調者',traits:'直感と感受性に優れた平和の使者。協調性と愛情で人々を繋ぐ橋渡し役。細やかな気配りが魅力。',lucky:'ラッキーデイ: 月曜日　ラッキーストーン: ムーンストーン'},
-    3:{title:'ライフパス 3 — 表現者',traits:'創造力と表現力に溢れた芸術家。コミュニケーション能力と楽観主義で周囲を明るく照らします。',lucky:'ラッキーデイ: 木曜日　ラッキーストーン: トパーズ'},
-    4:{title:'ライフパス 4 — 建築家',traits:'堅実で実用的な基盤の構築者。規律と努力で安定した世界を作り上げます。信頼と組織力が強み。',lucky:'ラッキーデイ: 土曜日　ラッキーストーン: エメラルド'},
-    5:{title:'ライフパス 5 — 冒険家',traits:'自由と変化を愛する冒険者。多才で柔軟な適応力を持ち様々な経験から人生を豊かにします。',lucky:'ラッキーデイ: 水曜日　ラッキーストーン: アクアマリン'},
-    6:{title:'ライフパス 6 — 養育者',traits:'愛と奉仕の精神を持つ癒し手。責任感と思いやりで家族や仲間を守ります。美と調和を愛する魂。',lucky:'ラッキーデイ: 金曜日　ラッキーストーン: ローズクォーツ'},
-    7:{title:'ライフパス 7 — 探求者',traits:'知識と真実を追い求める哲学者。分析力と直感を持ち深い洞察で物事の本質を見極めます。',lucky:'ラッキーデイ: 月曜日　ラッキーストーン: アメジスト'},
-    8:{title:'ライフパス 8 — 達成者',traits:'力と豊かさを引き寄せるビジョナリー。実行力と野心で物質的・精神的成功を手に入れます。',lucky:'ラッキーデイ: 土曜日　ラッキーストーン: ブラックオニキス'},
-    9:{title:'ライフパス 9 — 人道主義者',traits:'愛と知恵を世界に分かち合う慈悲の人。芸術性と普遍的な愛で人々の心を動かします。',lucky:'ラッキーデイ: 火曜日　ラッキーストーン: ガーネット'},
-    11:{title:'マスターナンバー 11 — 啓示者',traits:'高い直感と霊的な洞察力を持つ啓発者。インスピレーションで世界を照らし人々を導きます。',lucky:'ラッキーデイ: 月曜日　ラッキーストーン: パール'},
-    22:{title:'マスターナンバー 22 — 大建築家',traits:'夢を現実に変える力を持つ究極のビルダー。スケールの大きなビジョンを実現する才能があります。',lucky:'ラッキーデイ: 土曜日　ラッキーストーン: サファイア'},
-    33:{title:'マスターナンバー 33 — マスターティーチャー',traits:'愛と癒しの最高表現。世界に奉仕し人々の精神的成長を助ける使命を持ちます。',lucky:'ラッキーデイ: 金曜日　ラッキーストーン: エメラルド'},
-  };
-  return{number:num,...m[num]};
-}
-function getCelticTree(month,day){
-  const t=[
-    {name:'🌲 樺の木 (Birch)',traits:'新しい始まりと可能性の象徴。勇気と忍耐力で困難を乗り越え輝かしい未来を築きます。',lucky:'ラッキーカラー: 白　守護動物: 白鹿'},
-    {name:'🌳 ナナカマド (Rowan)',traits:'保護と洞察の木。強い精神力と直感で邪悪なものから守られ知恵の力が際立ちます。',lucky:'ラッキーカラー: 赤　守護動物: ユニコーン'},
-    {name:'🌿 トネリコ (Ash)',traits:'繋がりと変容の木。大きな視点で物事を見渡し世界と深く繋がる宇宙的な感覚があります。',lucky:'ラッキーカラー: 緑　守護動物: 海蛇'},
-    {name:'🌸 ハンノキ (Alder)',traits:'自信と決断力の木。行動と精神のバランスをとりながら目標へまっすぐ進む力があります。',lucky:'ラッキーカラー: 赤紫　守護動物: 狐'},
-    {name:'🌾 柳の木 (Willow)',traits:'月と直感の木。感情と直感に従い潮の流れのように柔軟に変化に適応します。',lucky:'ラッキーカラー: 銀　守護動物: ウサギ'},
-    {name:'🌱 サンザシ (Hawthorn)',traits:'見た目と本質の対比の木。外見の下に驚くべき複雑さを持ち変化の時に輝きます。',lucky:'ラッキーカラー: 紫　守護動物: 夜鷹'},
-    {name:'🌳 オーク (Oak)',traits:'力と忍耐の守護者。古い知恵と強さで周囲を守り時を超えた揺るぎない信頼を持ちます。',lucky:'ラッキーカラー: 金　守護動物: 金色の鷲'},
-    {name:'🍃 ヒイラギ (Holly)',traits:'保護と挑戦の木。困難に立ち向かう勇気と巧みさで逆境を乗り越えます。',lucky:'ラッキーカラー: 緑・赤　守護動物: 一角獣'},
-    {name:'🌰 ハシバミ (Hazel)',traits:'知恵と詩の木。創造的知性と表現力で言葉と数字の魔法を自在に操ります。',lucky:'ラッキーカラー: 茶　守護動物: サーモン'},
-    {name:'🍇 ブドウ (Vine)',traits:'相反する性質の木。深い感情と高い理想の間で輝き他者とは違う独自の視点を持ちます。',lucky:'ラッキーカラー: 白・緑　守護動物: 白鳥'},
-    {name:'🍂 アイビー (Ivy)',traits:'試練と繁栄の木。逆境でこそ成長し支え合いの中に自分の美しさを見出します。',lucky:'ラッキーカラー: 黄　守護動物: イノシシ'},
-    {name:'🎋 葦 (Reed)',traits:'物語と探求の木。秘密を保ちながら深く考え物事の核心を見極める探偵のような力があります。',lucky:'ラッキーカラー: オレンジ　守護動物: 犬'},
-    {name:'🌲 長老の木 (Elder)',traits:'始まりと終わりの木。深い変容と再生の力を持ちサイクルの完成と新たな始まりを象徴します。',lucky:'ラッキーカラー: 黒・白　守護動物: 鍛冶職人'},
-  ];
-  const m=+month,d=+day;
-  const p=[[12,24,1,20],[1,21,2,17],[2,18,3,17],[3,18,4,14],[4,15,5,12],[5,13,6,9],[6,10,7,7],[7,8,8,4],[8,5,9,1],[9,2,9,29],[9,30,10,27],[10,28,11,24],[11,25,12,23]];
-  for(let i=0;i<p.length;i++){const[sm,sd,em,ed]=p[i];if(sm===12&&((m===12&&d>=sd)||(m===1&&d<=ed)))return t[i];if((m===sm&&d>=sd)||(m>sm&&m<em)||(m===em&&d<=ed))return t[i];}
-  return t[0];
-}
-function getVedicNakshatra(year,month,day){
-  const n=[{name:'アシュヴィニー',deity:'アシュヴィン双神',traits:'活力と癒しの力を持ちます。新しい始まりへの情熱と人々を助けるヒーリングの才能があります。'},{name:'バラニー',deity:'ヤマ神',traits:'強い意志と変容の力を持ちます。創造と破壊のサイクルを理解し深い知恵を育てます。'},{name:'クリッティカー',deity:'アグニ神',traits:'鋭さと精錬の力。批判的思考と変革の炎で不純なものを焼き清める力があります。'},{name:'ローヒニー',deity:'ブラフマー神',traits:'豊かさと美を引き寄せます。創造性と感覚的な喜び芸術的才能が際立ちます。'},{name:'ムリガシラー',deity:'ソーマ神',traits:'好奇心旺盛で探求心が強い。真実と美を追い求め知識の探求に喜びを見出します。'},{name:'アーゴラー',deity:'ルドラ神',traits:'変革と破壊から再生を生む力。嵐の後の静けさのように試練を経て強さを増します。'},{name:'プナルヴァス',deity:'アディティ神',traits:'再生と豊かさの才能。困難から立ち直る回復力と希望をもたらす光の存在。'}];
-  return n[(+day+ +month*3+ +year)%n.length];
-}
-function getEgyptianSign(month,day){
-  const s=[{god:'🐊 セベク',name:'ワニの神',traits:'機転と適応力の達人。素早い判断と機敏な行動力であらゆる状況を乗り越えます。',lucky:'ラッキーストーン: エメラルド'},{god:'🌀 アメン・ラー',name:'王の神',traits:'楽観主義と穏やかな性格。困難でも希望を見失わず人々を安心させる存在感があります。',lucky:'ラッキーストーン: マラカイト'},{god:'🐺 アヌビス',name:'冥界の守護者',traits:'深い感受性と共感力を持ちます。暗闇の中で道を照らし魂を守る力があります。',lucky:'ラッキーストーン: ラピスラズリ'},{god:'⚔️ セト',name:'嵐の神',traits:'力と意志のある変革者。混乱の中でも中心を保ち強い意志で道を切り開きます。',lucky:'ラッキーストーン: ブラックオニキス'},{god:'🌟 バスト',name:'猫の女神',traits:'優雅さと強さを兼ね備えます。独立心と保護本能を持ち芸術と喜びを愛する魂。',lucky:'ラッキーストーン: ゴールデントパーズ'},{god:'👁️ ラー',name:'太陽神',traits:'太陽のように輝く存在感。情熱と生命力で周囲を照らし勝利と成功を引き寄せます。',lucky:'ラッキーストーン: ペリドット'},{god:'🦅 ホルス',name:'空の神',traits:'勇気と正義の守護者。高い視点から物事を俯瞰し守護と勝利の力を持ちます。',lucky:'ラッキーストーン: ルビー'}];
-  return s[Math.abs(+month* +day)%s.length];
-}
-function getMayanSign(year,month,day){
-  const names=['イミシュ','イク','アクバル','カン','チクチャン','キミ','マニク','ラマト','ムルク','オク','チュエン','エブ','ベン','ヒシュ','メン','キブ','カバン','エズナブ','カウアク','アフアウ'];
-  const meanings={'イミシュ':'ドラゴン・創造の始まり。創造の力と新しいエネルギーに満ちています。','イク':'風・霊の呼吸。コミュニケーションとインスピレーションの才能。','アクバル':'夜・夢の知恵。直感と内なる知識があなたを導きます。','カン':'トカゲ・生命の種。豊かさと肥沃な可能性に満ちています。','チクチャン':'羽蛇・神聖な力。霊的な知恵と変容の力を持ちます。','キミ':'変容・転換期。霊的再生と深い変化を象徴します。','マニク':'鹿・優雅な力。奉仕と道具の扱いに長けています。','ラマト':'金星・豊かさ。調和と繁栄をもたらす存在。','ムルク':'雨・感情の流れ。浄化と癒しの力があります。','オク':'犬・忠実な心。愛と献身の精神が際立ちます。','チュエン':'猿・創造と遊び。芸術と技巧に優れた才能。','エブ':'道・人類の道。謙虚さと旅の精神を持ちます。','ベン':'天国の柱・成長。天への到達と成長を象徴します。','ヒシュ':'ジャガー・魔術。シャーマンの力と神秘を宿します。','メン':'鷹・高い飛翔。ビジョンと独立の精神があります。','キブ':'蜂蜡・魂の再生。カルマと光の探求者。','カバン':'地球・シンクロニシティ。知性と運動の才能。','エズナブ':'火打石・反映。正義と修練の道を歩みます。','カウアク':'嵐・変革の力。エネルギーと協力の精神。','アフアウ':'太陽・完成。悟りと全体性の象徴。'};
-  const jdn=Math.floor(365.25*(+year+4716))+Math.floor(30.6001*(+month+1))+ +day-1524;
-  const name=names[((jdn%20)+20)%20];
-  return{name:`${((jdn%13)+13)%13+1} ${name}`,meaning:meanings[name]||'神聖な力と宇宙のリズム。'};
-}
 
-// ======== CALCULATE ========
-function calculate(){
-  const year=Y.value,month=M.value,day=D.value;
-  if(!year||!month||!day){alert('生年月日を全て選択してください ✨');return;}
-  const western=getWesternSign(month,day);
-  const chinese=getChineseZodiac(year);
-  const numerology=getNumerology(year,month,day);
-  const celtic=getCelticTree(month,day);
-  const nakshatra=getVedicNakshatra(year,month,day);
-  const egyptian=getEgyptianSign(month,day);
-  const mayan=getMayanSign(year,month,day);
-
-  const bdLabel=`${year}年${month}月${day}日`;
-  document.getElementById('birthday-display').textContent=bdLabel;
-  document.getElementById('print-date-label').textContent=bdLabel+' 生まれ';
-
-  const cards=[
-    {color:'#c06080',color2:'#e8a0b8',region:'西洋占星術',system:'Western Zodiac',icon:'♋',bg:'♑',result:western.name,desc:western.traits,lucky:western.lucky},
-    {color:'#c9a040',color2:'#e8cc88',region:'中国 · 干支',system:'Chinese Zodiac',icon:'☯',bg:'龍',result:chinese.name,desc:chinese.traits,lucky:chinese.lucky},
-    {color:'#9b7ab5',color2:'#c8b8d8',region:'数秘術',system:'Numerology',icon:'✧',bg:'∞',result:numerology.title,desc:numerology.traits,lucky:numerology.lucky},
-    {color:'#5b9e7a',color2:'#a8c0b0',region:'ケルト占い',system:'Celtic Tree',icon:'🌿',bg:'🌳',result:celtic.name,desc:celtic.traits,lucky:celtic.lucky},
-    {color:'#d4845c',color2:'#f5b895',region:'インド · ヴェーダ',system:'Vedic Nakshatra',icon:'☀',bg:'ॐ',result:`ナクシャトラ: ${nakshatra.name}`,desc:`守護神: ${nakshatra.deity}。${nakshatra.traits}`,lucky:'ヴェーダ占星術 月の宮'},
-    {color:'#7ba8c9',color2:'#b0d0e8',region:'エジプト占星術',system:'Egyptian Astrology',icon:'𓂀',bg:'☥',result:`${egyptian.god} — ${egyptian.name}`,desc:egyptian.traits,lucky:egyptian.lucky},
-    {color:'#c97ab5',color2:'#e8b0d8',region:'マヤ暦',system:'Mayan Tzolkin',icon:'🌀',bg:'☽',result:`ツォルキン: ${mayan.name}`,desc:mayan.meaning,lucky:'マヤの神聖暦 ツォルキン',wide:true},
-  ];
-
-  document.getElementById('fortune-grid').innerHTML=cards.map((c,i)=>`
-    <div class="fortune-card${c.wide?' wide':''}" data-bg-icon="${c.bg}"
-      style="--card-color:${c.color};--card-color2:${c.color2};animation:cardIn .55s cubic-bezier(.16,1,.3,1) ${i*.09}s both;">
-      <div class="card-header">
-        <div class="card-icon-wrap">${c.icon}</div>
-        <div class="card-meta">
-          <div class="card-region">${c.region}</div>
-          <div class="card-system">${c.system}</div>
-        </div>
+  let html = `
+    <div class="shiori-cover">
+      <div class="shiori-title">旅のしおり</div>
+      <div class="shiori-subtitle">My Travel Notebook</div>
+      <div class="shiori-emoji-row">${data.emoji || '✈️🌟🗺️'}</div>
+      <h2 style="font-family:'Zen Maru Gothic',sans-serif;font-size:1.5rem;color:#3a1a0a;font-weight:900;position:relative;">${data.destination}</h2>
+      <p style="font-size:0.85rem;color:#8a6050;margin-top:4px;font-style:italic;position:relative;">"${data.catchcopy}"</p>
+      <div class="shiori-meta">
+        <span class="meta-badge">📍 ${meta.departure}発</span>
+        <span class="meta-badge">📅 ${meta.duration}</span>
+        <span class="meta-badge">${meta.transport}</span>
       </div>
-      <div class="card-result">${c.result}</div>
-      <div class="card-desc">${c.desc}</div>
-      <div class="card-lucky">✦ ${c.lucky}</div>
-    </div>`).join('');
+      <div class="shiori-meta" style="margin-top:8px;">
+        ${meta.themes.map(t => `<span class="meta-badge" style="background:rgba(255,221,87,0.15);border-color:rgba(220,160,0,0.3);color:#a07010;">${t}</span>`).join('')}
+      </div>
+    </div>
+    <div class="shiori-body">
+  `;
 
-  document.getElementById('summary-card').innerHTML=`
-    <div class="deco-circle c1"></div><div class="deco-circle c2"></div>
-    <div class="top-tag">✦ &nbsp;COSMIC READING&nbsp; ✦</div>
-    <h3>あなたの宇宙的プロフィール</h3>
-    <div class="fortune-stars">✦ ✦ ✦ ✦ ✦</div>
-    <p>あなたの魂は<strong>${western.element}の元素</strong>に導かれ、<strong>${western.planet}</strong>の加護のもとに輝いています。${chinese.name.split(' ').slice(0,2).join(' ')}の年に生まれたことで、その動物の力強さがあなたの人生に流れています。ライフパスナンバー<strong>${numerology.number}</strong>は、あなたの使命と内なる呼び声を示し、世界7つの占術があなたの特別な存在を確認しています。</p>
-    <p style="margin-top:18px;font-size:.9rem;opacity:.65;line-height:1.8;">7つの占術システムがあなたの魂の設計図を描き出しました。<br>星々はあなたのために特別なパターンを織り成しています。</p>`;
+  data.days.forEach((day, i) => {
+    const cs = colorSets[i % colorSets.length];
+    html += `
+      <div class="day-section" style="animation-delay:${i * 0.1}s">
+        <div class="day-header">
+          <span class="day-badge" style="background:linear-gradient(135deg,${cs.border},${cs.border}99)">${day.day}</span>
+          <span class="day-title">${day.title}</span>
+        </div>
+        <div class="timeline">
+    `;
 
-  const r=document.getElementById('results');
-  r.classList.add('show');
-  setTimeout(()=>r.scrollIntoView({behavior:'smooth',block:'start'}),100);
+    day.schedule.forEach((item, j) => {
+      html += `
+        <div class="timeline-item">
+          <div class="time-label" style="color:${cs.border}">⏰ ${item.time}</div>
+          <div class="activity-card" style="border-left-color:${cs.border};background:${cs.bg};">
+            <div class="activity-name">${item.place}</div>
+            <div class="activity-desc">${item.description}</div>
+            ${item.tags && item.tags.length ? `
+              <div class="activity-tags">
+                ${item.tags.map(t => `<span class="tag" style="background:${cs.bg};color:${cs.border};border:1px solid ${cs.border}30;">${t}</span>`).join('')}
+              </div>` : ''}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+    if (i < data.days.length - 1) html += `<div class="divider">✦ ✦ ✦</div>`;
+  });
+
+  if (data.tips && data.tips.length) {
+    html += `
+      <div class="tips-section">
+        <div class="tips-title">💡 旅のヒント・持ち物チェック</div>
+        ${data.tips.map(t => `<div class="tip-item">• ${t}</div>`).join('')}
+      </div>
+    `;
+  }
+
+  html += `
+      <div style="text-align:center;margin-top:24px;font-size:1.5rem;">✈️ 🌟 良い旅を！ 🌟 ✈️</div>
+      <div style="text-align:center;color:#aaa;font-size:0.72rem;margin-top:8px;">created by tabisora</div>
+    </div>
+  `;
+
+  document.getElementById('shioriContent').innerHTML = html;
 }
 
-function printResult(){window.print();}
-
-function resetForm(){
-  Y.value='';M.value='';D.value='';
-  const r=document.getElementById('results');
-  r.classList.remove('show');
-  window.scrollTo({top:0,behavior:'smooth'});
+function goBack() {
+  document.getElementById('itinerarySection').classList.remove('show');
+  document.getElementById('formSection').style.display = 'block';
+  document.getElementById('shioriContent').innerHTML = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
 </body>
