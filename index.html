@@ -44,6 +44,7 @@ body{font-family:'Noto Sans JP',sans-serif;min-height:100vh;background:linear-gr
 .err.show{display:block;}
 .btn-submit{width:100%;margin-top:22px;padding:15px;border:none;border-radius:100px;background:linear-gradient(135deg,var(--accent),var(--salmon));color:#1a3a6b;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.05rem;cursor:pointer;box-shadow:0 8px 28px rgba(255,221,87,.4);transition:transform .25s,box-shadow .25s;}
 .btn-submit:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,221,87,.58);}
+.btn-submit:active{transform:none;}
 #loading{display:none;text-align:center;padding:70px 0;}
 #loading.show{display:block;}
 .plane-bounce{font-size:3.5rem;display:inline-block;animation:bounce 1.6s ease-in-out infinite;}
@@ -67,7 +68,7 @@ body{font-family:'Noto Sans JP',sans-serif;min-height:100vh;background:linear-gr
 .day-label{color:white;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:.72rem;padding:4px 12px;border-radius:100px;white-space:nowrap;}
 .day-ttl{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.95rem;color:#2a1a0a;}
 .timeline{position:relative;padding-left:20px;}
-.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;border-radius:2px;}
+.tl-line{position:absolute;left:6px;top:0;bottom:0;width:2px;border-radius:2px;}
 .tl-item{position:relative;margin-bottom:13px;}
 .tl-dot{position:absolute;left:-17px;top:7px;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.15);}
 .tl-time{font-size:.7rem;font-weight:700;letter-spacing:1px;margin-bottom:3px;}
@@ -118,7 +119,7 @@ body{font-family:'Noto Sans JP',sans-serif;min-height:100vh;background:linear-gr
     </div>
     <div class="field">
       <label>🎨 旅のテーマ（複数OK）</label>
-      <div class="pills" id="themePills">
+      <div class="pills">
         <div class="pill" data-v="グルメ">🍜 グルメ</div>
         <div class="pill" data-v="自然・絶景">🌄 自然・絶景</div>
         <div class="pill" data-v="カフェ巡り">☕ カフェ巡り</div>
@@ -133,7 +134,7 @@ body{font-family:'Noto Sans JP',sans-serif;min-height:100vh;background:linear-gr
     </div>
     <div class="field">
       <label>🚗 移動方法</label>
-      <div class="transports" id="transPills">
+      <div class="transports">
         <div class="tp" data-v="✈️ 飛行機"><span class="ic">✈️</span>飛行機</div>
         <div class="tp" data-v="🚄 新幹線"><span class="ic">🚄</span>新幹線</div>
         <div class="tp" data-v="🚗 レンタカー"><span class="ic">🚗</span>レンタカー</div>
@@ -163,214 +164,220 @@ body{font-family:'Noto Sans JP',sans-serif;min-height:100vh;background:linear-gr
 </div>
 
 <script>
-// ====================================================
-// 🔑 APIキーをここに貼り付けてください
-const API_KEY = 'sk-ant-xxxxxxxxxxxxxxxxxx';
-// ====================================================
-
-/* Stars */
+/* ===== STARS ===== */
 const starsEl=document.getElementById('stars');
-for(let i=0;i<75;i++){const s=document.createElement('div');s.className='star';const sz=Math.random()*2.5+1;s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*3}s;--dl:${Math.random()*4}s`;starsEl.appendChild(s);}
+for(let i=0;i<75;i++){
+  const s=document.createElement('div');s.className='star';
+  const sz=Math.random()*2.5+1;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*3}s;--dl:${Math.random()*4}s`;
+  starsEl.appendChild(s);
+}
 
-/* Clouds */
+/* ===== CLOUDS ===== */
 const cloudsEl=document.getElementById('clouds');
-[[130,42,'13%','26s','0s',.5],[185,56,'55%','37s','-9s',.62],[90,30,'33%','21s','-5s',.38],[155,48,'73%','41s','-17s',.68]].forEach(([w,h,t,d,dl,o])=>{const c=document.createElement('div');c.className='cloud';c.style.cssText=`width:${w}px;height:${h}px;top:${t};opacity:${o};--d:${d};--dl:${dl}`;cloudsEl.appendChild(c);});
+[[130,42,'13%','26s','0s',.5],[185,56,'55%','37s','-9s',.62],[90,30,'33%','21s','-5s',.38],[155,48,'73%','41s','-17s',.68]].forEach(([w,h,t,d,dl,o])=>{
+  const c=document.createElement('div');c.className='cloud';
+  c.style.cssText=`width:${w}px;height:${h}px;top:${t};opacity:${o};--d:${d};--dl:${dl}`;
+  cloudsEl.appendChild(c);
+});
 
-/* Pills */
+/* ===== PILLS ===== */
 document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>p.classList.toggle('on'));
-document.querySelectorAll('.tp').forEach(p=>p.onclick=()=>{document.querySelectorAll('.tp').forEach(x=>x.classList.remove('on'));p.classList.add('on');});
+document.querySelectorAll('.tp').forEach(p=>p.onclick=()=>{
+  document.querySelectorAll('.tp').forEach(x=>x.classList.remove('on'));
+  p.classList.add('on');
+});
 
-/* Loading msgs */
+/* ===== LOADING MSGS ===== */
 const MSGS=['旅のしおりを作成中...','✨ おすすめスポット探してるよ...','🗺️ ルートを考えてるよ...','🌟 もうすぐ出発！'];
 let midx=0,mtimer=null;
-function startMsgs(){midx=0;document.getElementById('loadTxt').textContent=MSGS[0];mtimer=setInterval(()=>{midx=(midx+1)%MSGS.length;document.getElementById('loadTxt').textContent=MSGS[midx];},1800);}
+function startMsgs(){
+  midx=0;document.getElementById('loadTxt').textContent=MSGS[0];
+  mtimer=setInterval(()=>{midx=(midx+1)%MSGS.length;document.getElementById('loadTxt').textContent=MSGS[midx];},1800);
+}
 function stopMsgs(){clearInterval(mtimer);}
 
-const COLORS=[{b:'#ff7c5c',bg:'#fff5f2'},{b:'#ff9a5c',bg:'#fff8f0'},{b:'#ffb347',bg:'#fffbf0'},{b:'#ff6b9d',bg:'#fff0f6'},{b:'#9b59b6',bg:'#f8f0ff'},{b:'#3498db',bg:'#f0f8ff'},{b:'#2ecc71',bg:'#f0fff4'}];
+/* ===== COLORS ===== */
+const COLORS=[
+  {b:'#ff7c5c',bg:'#fff5f2'},{b:'#ff9a5c',bg:'#fff8f0'},
+  {b:'#ffb347',bg:'#fffbf0'},{b:'#ff6b9d',bg:'#fff0f6'},
+  {b:'#9b59b6',bg:'#f8f0ff'},{b:'#3498db',bg:'#f0f8ff'},
+  {b:'#2ecc71',bg:'#f0fff4'}
+];
 
-/* ===== プランデータ ===== */
-const SPOT_DB = {
-  グルメ:{
-    am:['地元の朝市でモーニング','老舗喫茶でモーニング','地元スーパーで朝食探索'],
-    mid:['名物ランチ','有名ラーメン店','地元の定食屋','名物丼ランチ'],
-    pm:['地元居酒屋で夕食','人気レストランでディナー','屋台街を食べ歩き'],
-    spot:['市場','フードホール','地元の名店']
+/* ===== SPOT DATABASE ===== */
+const DB={
+  'グルメ':{
+    spots:['市場','フードホール','老舗食堂','名物ラーメン店','地元居酒屋','屋台街','朝市'],
+    am:['地元の朝市でモーニング','老舗喫茶でモーニングセット','名物パン屋で朝ごはん'],
+    mid:['有名ラーメンでランチ','地元の定食屋','名物丼ランチ','話題のカフェランチ'],
+    pm:['地元居酒屋で夕食','人気レストランでディナー','屋台街を食べ歩き','〆の一杯'],
+    tips:['食べ歩き用の袋を持参しよう','お腹を空かせてから行くのが鉄則！','地元のB級グルメも忘れずに']
   },
   '自然・絶景':{
-    am:['早朝の展望台で絶景','朝霧の中をハイキング','日の出スポットへ'],
+    spots:['展望台','国立公園','湖','滝','山頂','海岸','渓谷'],
+    am:['早朝の展望台で絶景を独り占め','朝霧の中をハイキング','日の出スポットへ'],
     mid:['絶景カフェでランチ','自然公園をトレッキング','湖畔でピクニック'],
-    pm:['夕日の名所へ','星空観察','ナイトハイク'],
-    spot:['展望台','国立公園','湖','滝','山頂']
+    pm:['夕日の名所へ','星空観察スポット','夕暮れの海岸散歩'],
+    tips:['動きやすいスニーカーは必須','天気予報を事前にチェック','早起きが絶景への近道']
   },
   'カフェ巡り':{
-    am:['オープニングカフェで朝食','有名モーニングカフェ','隠れ家カフェでゆったり'],
-    mid:['話題のランチカフェ','ハンドドリップ専門店','ブックカフェでまったり'],
-    pm:['夜カフェでスイーツ','バーカウンターのある cafe','〆のコーヒーショップ'],
-    spot:['スペシャルティコーヒー店','古民家カフェ','絶景カフェ','猫カフェ']
+    spots:['スペシャルティコーヒー店','古民家カフェ','絶景カフェ','ブックカフェ','隠れ家カフェ'],
+    am:['話題のオープニングカフェで朝食','有名モーニングカフェ','隠れ家カフェでゆったり'],
+    mid:['ハンドドリップ専門店','ブックカフェでまったり読書','フォトジェニックカフェランチ'],
+    pm:['夜カフェでスイーツ','おしゃれバーカフェ','〆のコーヒーショップ'],
+    tips:['モバイルバッテリーを忘れずに','混む前の開店直後を狙おう','インスタ映えは午前中の光が最高']
   },
   '歴史・文化':{
-    am:['歴史的神社・仏閣を参拝','早朝の静かな城址散策','博物館のオープン時間に合わせて'],
+    spots:['神社','寺','城跡','博物館','伝統的街並み','旧市街','文化財'],
+    am:['歴史的神社・仏閣を参拝','早朝の静かな城址散策','博物館のオープンに合わせて'],
     mid:['歴史的町並みを散策','伝統工芸体験','郷土料理ランチ'],
-    pm:['夜の文化施設','ライトアップされた名所','伝統芸能鑑賞'],
-    spot:['神社','寺','城跡','博物館','伝統的街並み']
+    pm:['夜のライトアップされた名所','伝統芸能鑑賞','歴史地区の夜散歩'],
+    tips:['事前に歴史を軽く調べると2倍楽しい','御朱印帳を持参しよう','ガイドツアーも選択肢のひとつ']
   },
   'インスタ映え':{
-    am:['映えスポットで朝の撮影','フォトジェニックなモーニング','アートスポット巡り'],
+    spots:['壁画アートスポット','映えカフェ','展望スポット','フォトジェニック公園','カラフル街並み'],
+    am:['映えスポットで朝の撮影タイム','フォトジェニックなモーニング','アートスポット巡り'],
     mid:['カラフルなランチ','フォトスポット巡り','インスタ映えカフェ'],
     pm:['夕暮れの絶景ショット','ライトアップ撮影','夜景フォトスポット'],
-    spot:['壁画アート','映えカフェ','展望スポット','フォトスポット']
+    tips:['三脚かセルフィースティックを持参','ゴールデンタイムは日の出・日没前後','衣装を現地テーマに合わせよう']
   },
   '温泉・癒し':{
-    am:['朝風呂でリフレッシュ','温泉街を朝散歩','旅館の朝食をゆっくり'],
+    spots:['露天風呂','足湯','温泉街','湯治場','温泉旅館','スパ施設'],
+    am:['朝風呂でリフレッシュ','温泉街を朝散歩','旅館の朝食をゆっくり堪能'],
     mid:['日帰り温泉でのんびり','足湯カフェ','温泉まんじゅう食べ歩き'],
     pm:['夜の露天風呂','温泉街の夜散歩','旅館でお部屋食'],
-    spot:['露天風呂','足湯','温泉街','湯治場']
+    tips:['バスタオルと着替えを多めに','早め早めの時間帯が空いてておすすめ','温泉後は保湿クリームを忘れずに']
   },
   'アクティビティ':{
+    spots:['マリーナ','アウトドアパーク','体験施設','フィールド','ビーチ','山岳エリア'],
     am:['朝のサーフィン体験','カヤック体験','ハイキングスタート'],
-    mid:['マリンスポーツ体験','ジップライン','サイクリング'],
-    pm:['夕方のボートクルーズ','アドベンチャーパーク','夜のナイトサファリ'],
-    spot:['マリーナ','アウトドアパーク','体験施設','フィールド']
+    mid:['マリンスポーツ体験','ジップライン','サイクリングツアー'],
+    pm:['夕方のボートクルーズ','アドベンチャーパーク','夕焼けの中でBBQ'],
+    tips:['動きやすい服装で行こう','事前予約が安心','怪我防止のためウォームアップを']
   },
   'ショッピング':{
+    spots:['商店街','アウトレット','マーケット','セレクトショップ','骨董市','地元市場'],
     am:['商店街をぶらり朝散歩','骨董市・フリマ','地元のパン屋巡り'],
-    mid:['ショッピングモール','地元のマーケット','アーケード街'],
-    pm:['夜のショッピング','ナイトマーケット','お土産探し'],
-    spot:['商店街','アウトレット','マーケット','セレクトショップ']
+    mid:['ショッピングモールを探索','地元マーケット','アーケード街'],
+    pm:['夜のナイトマーケット','お土産をじっくり選ぶ','セールタイムを狙って'],
+    tips:['エコバッグを持参しよう','帰りの荷物スペースを計算して','クレジットカードと現金両方準備']
   },
   'アニメ・ポップカルチャー':{
-    am:['聖地巡礼スタート','アニメショップオープン待ち','キャラクターカフェモーニング'],
-    mid:['ガチャガチャ巡り','アニメ関連スポット','コスプレショップ'],
-    pm:['ゲームセンター','アニメイベント','夜の秋葉原的エリア'],
-    spot:['アニメショップ','聖地','キャラカフェ','ゲーセン']
+    spots:['アニメショップ','聖地スポット','キャラカフェ','ゲームセンター','フィギュア専門店'],
+    am:['聖地巡礼スタート','アニメショップのオープン待ち','キャラクターカフェでモーニング'],
+    mid:['ガチャガチャ巡り','アニメ関連スポット','コスプレショップ探索'],
+    pm:['ゲームセンターで盛り上がる','アニメイベントへ','夜のアキバ系エリア探索'],
+    tips:['限定グッズは午前中に！売り切れ注意','聖地マップをスマホに保存しておこう','コスプレOKスポットを事前に確認']
   },
   '夜景・バー':{
-    am:['チェックイン後に観光','昼間のうちに定番スポット','夕方に向けてのんびり'],
-    mid:['夕食を早めに','展望レストランでディナー','夜景が見えるカフェ'],
-    pm:['夜景スポットへ','おしゃれなバーで一杯','屋上バーで乾杯'],
-    spot:['展望台','スカイバー','夜景スポット','ルーフトップバー']
+    spots:['展望台','スカイバー','夜景スポット','ルーフトップバー','夜景レストラン'],
+    am:['チェックイン後に昼間の観光','定番スポットを昼に下見','夕方に向けてのんびり準備'],
+    mid:['展望レストランで早めのディナー','夜景が見えるカフェで休憩','日没前に夜景スポットへ移動'],
+    pm:['展望台で夜景を堪能','おしゃれバーで一杯','屋上バーで乾杯！'],
+    tips:['夜は気温が下がるので上着を','お酒は飲み過ぎ注意・代行・電車を確認','カメラの夜景モードを練習しておこう']
   }
 };
 
-const DEST_SUGGEST = {
-  '東京': ['浅草・上野','新宿・渋谷','お台場・豊洲','銀座・日本橋','下北沢・中目黒'],
-  '大阪': ['道頓堀・心斎橋','梅田・北浜','天満・中崎町','新世界・難波'],
-  '京都': ['嵐山','清水寺・祇園','伏見稲荷','嵯峨野','金閣寺エリア'],
-  '北海道': ['札幌','函館','富良野','小樽','知床'],
-  '沖縄': ['那覇・国際通り','美ら海水族館エリア','宮古島','石垣島','恩納村'],
-  '福岡': ['博多','天神','柳川','糸島','太宰府'],
+const DESTINATIONS=[
+  '京都','金沢','奈良','鎌倉','長崎','松山','函館','仙台','広島','那覇',
+  '富良野','小樽','箱根','日光','高山','白川郷','軽井沢','熱海','下田','萩'
+];
+
+const DAY_TITLES=[
+  ['出発！まずは定番スポットへ','地元の魅力を全力で満喫','テーマを深掘りする日'],
+  ['朝から全力で楽しむ日','のんびり気分で街を散策','旅の醍醐味、全部詰め込む'],
+  ['最終日は思い出ラッシュ','帰る前にもう一か所','悔いなし！ラストスパート']
+];
+
+const CATCHCOPIES=[
+  '{dest}で最高の思い出を','{dest}、全力で楽しもう！',
+  '心が躍る{dest}の旅','忘れられない{dest}へ',
+  '{dest}で自分だけの旅を','{dest}に恋をした旅'
+];
+
+const EMOJI_MAP={
+  'グルメ':'🍜','自然・絶景':'🌄','カフェ巡り':'☕','歴史・文化':'⛩️',
+  'インスタ映え':'📸','温泉・癒し':'♨️','アクティビティ':'🏄',
+  'ショッピング':'🛍️','アニメ・ポップカルチャー':'🎌','夜景・バー':'🌃'
 };
 
-function pickRand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+const TIMES=[
+  [{t:'9:00',p:'am'},{t:'11:00',p:'mid'},{t:'13:30',p:'mid'},{t:'15:30',p:'pm'},{t:'18:30',p:'pm'}],
+  [{t:'8:30',p:'am'},{t:'10:30',p:'am'},{t:'13:00',p:'mid'},{t:'15:30',p:'mid'},{t:'19:00',p:'pm'}],
+  [{t:'9:30',p:'am'},{t:'11:30',p:'mid'},{t:'14:00',p:'mid'},{t:'16:30',p:'pm'},{t:'19:30',p:'pm'}],
+  [{t:'8:00',p:'am'},{t:'10:00',p:'am'},{t:'12:30',p:'mid'},{t:'15:00',p:'mid'},{t:'18:00',p:'pm'}],
+];
 
-function buildPlan(dep, dur, themes, trans, dest, memo){
-  // 日数
-  const dayMap = {'日帰り（0泊1日）':1,'1泊2日':2,'2泊3日':3,'3泊4日':4,'4泊5日':5,'約1週間（6〜7日）':7};
-  const numDays = dayMap[dur] || 2;
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5);}
 
-  // 目的地
-  let destination = dest;
+function buildPlan(dep,dur,themes,trans,dest,memo){
+  const dayMap={'日帰り（0泊1日）':1,'1泊2日':2,'2泊3日':3,'3泊4日':4,'4泊5日':5,'約1週間（6〜7日）':7};
+  const numDays=dayMap[dur]||2;
+
+  // 目的地を決定
+  let destination=dest||'';
   if(!destination){
-    const keys = Object.keys(DEST_SUGGEST);
-    const matched = keys.find(k=>dep.includes(k));
-    if(matched){
-      const opts = keys.filter(k=>k!==matched);
-      destination = pickRand(opts);
-    } else {
-      destination = pickRand(['京都','北海道','沖縄','福岡','奈良','金沢','長崎','仙台','広島','鎌倉']);
-    }
+    // 出発地と被らない目的地を選ぶ
+    const filtered=DESTINATIONS.filter(d=>!dep.includes(d)&&!d.includes(dep.slice(0,2)));
+    destination=rnd(filtered.length?filtered:DESTINATIONS);
   }
 
-  // テーマ別スポットDB取得
-  const themeData = themes.map(t => SPOT_DB[t] || SPOT_DB['グルメ']);
+  // 絵文字
+  const emojis=['✈️',...themes.slice(0,3).map(t=>EMOJI_MAP[t]||'🌟')].join('');
 
-  // emoji & catchcopy
-  const emojiMap = {'グルメ':'🍜','自然・絶景':'🌄','カフェ巡り':'☕','歴史・文化':'⛩️','インスタ映え':'📸','温泉・癒し':'♨️','アクティビティ':'🏄','ショッピング':'🛍️','アニメ・ポップカルチャー':'🎌','夜景・バー':'🌃'};
-  const emojis = ['✈️', ...themes.slice(0,3).map(t=>emojiMap[t]||'🌟')].join('');
+  // キャッチコピー
+  const catchcopy=rnd(CATCHCOPIES).replace('{dest}',destination);
 
-  const copies = [
-    `${destination}で最高の思い出を`,`${destination}、全力で楽しもう！`,
-    `心が躍る${destination}の旅`,`忘れられない${destination}へ`,
-    `${destination}で自分だけの旅を`
-  ];
+  // 日程生成
+  const usedSpots=new Set();
+  const days=Array.from({length:numDays},(_,di)=>{
+    // テーマをローテーション
+    const theme=themes[di%themes.length];
+    const db=DB[theme]||DB['グルメ'];
+    const times=TIMES[di%TIMES.length];
 
-  // スケジュール生成
-  const dayTitles = [
-    ['出発！まずは定番スポットへ','朝から全力で楽しむ日','テーマを深掘りする日'],
-    ['地元の魅力を再発見','のんびり派? アクティブ派?','旅の醍醐味、全部詰め込む'],
-    ['最終日は思い出ラッシュ','帰る前にもう一か所','悔いなし！ラストスパート']
-  ];
+    const schedule=times.map((slot,si)=>{
+      // スポットを重複なし
+      const available=db.spots.filter(s=>!usedSpots.has(s));
+      const spotPool=available.length?available:db.spots;
+      const spot=rnd(spotPool);
+      usedSpots.add(spot);
 
-  const timeSets = [
-    [{t:'9:00',phase:'am'},{t:'11:30',phase:'mid'},{t:'13:00',phase:'mid'},{t:'15:30',phase:'pm'},{t:'18:00',phase:'pm'}],
-    [{t:'8:30',phase:'am'},{t:'10:30',phase:'am'},{t:'13:00',phase:'mid'},{t:'15:00',phase:'mid'},{t:'19:00',phase:'pm'}],
-    [{t:'9:30',phase:'am'},{t:'11:00',phase:'mid'},{t:'14:00',phase:'mid'},{t:'16:30',phase:'pm'},{t:'18:30',phase:'pm'}],
-  ];
+      const actPool=db[slot.p]||db.mid;
+      const act=rnd(actPool);
 
-  const days = Array.from({length:numDays},(_,di)=>{
-    const td = themeData[di % themeData.length];
-    const times = timeSets[di % timeSets.length];
-    const ttlArr = dayTitles[di % dayTitles.length];
+      const transName=trans.replace(/^.+\s/,'');
+      const tags=[theme,si===0&&di===0?'初日スタート':si===times.length-1?'〆の時間':'',transName]
+        .filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,2);
 
-    const schedule = times.map((slot,si)=>{
-      const phase = slot.phase;
-      const acts = td[phase] || td.mid;
-      const spotList = td.spot || ['スポット'];
-      const spot = pickRand(spotList);
-      const act = pickRand(acts);
-      const theme = themes[si % themes.length];
-      const tags = [theme, trans.replace(/^.+ /,''), di===0&&si===0?'初日':di===numDays-1?'最終日':''].filter(Boolean).slice(0,2);
-
-      const descs = [
+      const descTemplates=[
         `${destination}の${spot}で${act}`,
         `地元${spot}を${theme}目線で満喫`,
         `${act}で${destination}気分を堪能`,
-        `${theme}好き必見の${spot}へ`,
-        `${trans}で来たからこそ寄れる${spot}`
+        `${theme}好き必見！${spot}をチェック`,
+        `${transName}旅ならではの${spot}体験`
       ];
 
-      return {
-        time: slot.t,
-        place: `${destination}・${spot}`,
-        description: pickRand(descs),
-        tags
-      };
+      return{time:slot.t,place:`${destination}・${spot}`,description:rnd(descTemplates),tags};
     });
 
-    return {
-      day: numDays===1 ? '本日' : `${di+1}日目`,
-      title: ttlArr,
+    const titleArr=DAY_TITLES[di%DAY_TITLES.length];
+    return{
+      day:numDays===1?'本日':di===0?`${di+1}日目（出発）`:di===numDays-1?`${di+1}日目（最終日）`:`${di+1}日目`,
+      title:titleArr[di%titleArr.length]||titleArr[0],
       schedule
     };
   });
 
-  // Tips
-  const tipsByTheme = {
-    'グルメ':['食べ歩き用の袋を持参しよう','お腹を空かせてから行くのが鉄則！','地元のB級グルメも忘れずに'],
-    '自然・絶景':['動きやすいスニーカーは必須','天気予報を事前にチェック','早起きが絶景への近道'],
-    'カフェ巡り':['モバイルバッテリーを忘れずに','混む前の開店直後を狙おう','インスタ映えスポットはモーニングが狙い目'],
-    '歴史・文化':['事前に歴史を軽く調べておくと2倍楽しい','御朱印帳を持参しよう','ガイドツアーも選択肢のひとつ'],
-    'インスタ映え':['三脚かセルフィースティックを持参','ゴールデンタイムは日の出・日没前後','衣装を現地テーマに合わせよう'],
-    '温泉・癒し':['バスタオルと着替えを多めに','早め早めの時間帯が空いてておすすめ','温泉成分によっては保湿クリームを'],
-    'アクティビティ':['動きやすい服装で行こう','事前予約が安心','怪我防止のためウォームアップを'],
-    'ショッピング':['エコバッグを持参しよう','帰りの荷物スペースを計算して','クレジットカードと現金両方準備'],
-    'アニメ・ポップカルチャー':['限定グッズは午前中に！売り切れ注意','聖地マップをスマホに保存しておこう','コスプレOKスポットを事前に確認'],
-    '夜景・バー':['夜は気温が下がるので上着を','お酒は飲み過ぎ注意・代行・電車を確認','カメラの夜景モードを練習しておこう'],
-  };
-
-  const tips = [
-    ...(tipsByTheme[themes[0]] || ['荷物は必要最低限に','予備の現金を持っておこう','旅行保険の加入を検討しよう']),
-    `${trans}を使った移動は事前予約がスムーズ`,
-    '旅の思い出は写真だけでなく日記にも残そう'
+  // Tips（テーマ別）
+  const tips=[
+    ...DB[themes[0]]?.tips||['荷物は必要最低限に','予備の現金を持っておこう'],
+    `${trans}を使った移動は事前予約がスムーズ`
   ].slice(0,3);
 
-  return {
-    destination,
-    catchcopy: pickRand(copies),
-    emoji: emojis,
-    days,
-    tips
-  };
+  return{destination,catchcopy,emoji:emojis,days,tips};
 }
 
 /* ===== SUBMIT ===== */
@@ -392,54 +399,21 @@ async function onSubmit(){
   document.getElementById('loading').classList.add('show');
   startMsgs();
 
-  // APIキーが設定されていればAPI呼び出し、なければローカル生成
-  const hasKey = API_KEY && !API_KEY.includes('xxxxxxxxx') && API_KEY.length > 20;
-
-  if(hasKey){
-    await generateWithAPI(dep,dur,themes,trans,dest,memo);
-  } else {
-    // ローカルプラン生成（APIキー不要）
-    await new Promise(r=>setTimeout(r, 2200)); // ローディング演出
-    const plan = buildPlan(dep,dur,themes,trans,dest,memo);
-    stopMsgs();
-    document.getElementById('loading').classList.remove('show');
-    renderShiori(plan,{dep,dur,themes,trans});
-    document.getElementById('shiori').classList.add('show');
-  }
+  // ローディング演出後にプラン生成
+  await new Promise(r=>setTimeout(r,2400));
+  const plan=buildPlan(dep,dur,themes,trans,dest,memo);
+  stopMsgs();
+  document.getElementById('loading').classList.remove('show');
+  renderShiori(plan,{dep,dur,themes,trans});
+  document.getElementById('shiori').classList.add('show');
 }
 
-async function generateWithAPI(dep,dur,themes,trans,dest,memo){
-  const prompt=`あなたは旅行プランナーです。以下の条件で旅のしおりをJSON形式で作成してください。
-条件：出発地:${dep} / 行き先:${dest||'おすすめを提案'} / 期間:${dur} / テーマ:${themes.join('、')} / 移動:${trans} / その他:${memo||'なし'}
-必ずJSON形式のみで返答（コードブロック不要）：
-{"destination":"目的地","catchcopy":"キャッチコピー20文字以内","emoji":"絵文字3〜4個","days":[{"day":"1日目","title":"テーマ","schedule":[{"time":"9:00","place":"場所名","description":"説明30文字","tags":["タグ1","タグ2"]}]}],"tips":["tip1","tip2","tip3"]}
-期間に応じた日数でdaysを作成。各日4〜5個のschedule。`;
-
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
-    });
-    const data=await res.json();
-    const txt=(data.content||[]).map(b=>b.text||'').join('');
-    const json=JSON.parse(txt.replace(/```json|```/g,'').trim());
-    stopMsgs();
-    document.getElementById('loading').classList.remove('show');
-    renderShiori(json,{dep,dur:dur,themes,trans});
-    document.getElementById('shiori').classList.add('show');
-  }catch(e){
-    // APIが失敗してもローカルで補完
-    const plan = buildPlan(dep,dur,themes,trans,dest,memo);
-    stopMsgs();
-    document.getElementById('loading').classList.remove('show');
-    renderShiori(plan,{dep,dur,themes,trans});
-    document.getElementById('shiori').classList.add('show');
-  }
+function showErr(msg){
+  const el=document.getElementById('errMsg');
+  el.textContent=msg;el.classList.add('show');
 }
 
-function showErr(msg){const el=document.getElementById('errMsg');el.textContent=msg;el.classList.add('show');}
-
+/* ===== RENDER ===== */
 function renderShiori(d,meta){
   let html=`<div class="s-cover">
     <div class="s-cover-title">旅のしおり</div>
@@ -462,11 +436,11 @@ function renderShiori(d,meta){
     const c=COLORS[di%COLORS.length];
     html+=`<div class="day-block">
       <div class="day-head">
-        <span class="day-label" style="background:linear-gradient(135deg,${c.b},${c.b}99)">${esc(day.day)}</span>
+        <span class="day-label" style="background:linear-gradient(135deg,${c.b},${c.b}bb)">${esc(day.day)}</span>
         <span class="day-ttl">${esc(day.title)}</span>
       </div>
-      <div class="timeline" style="border-left:none">
-      <div style="position:absolute;left:6px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,${c.b}80,${c.b}22);border-radius:2px;"></div>`;
+      <div class="timeline">
+        <div class="tl-line" style="background:linear-gradient(to bottom,${c.b}88,${c.b}22)"></div>`;
 
     (day.schedule||[]).forEach(item=>{
       html+=`<div class="tl-item">
@@ -484,9 +458,14 @@ function renderShiori(d,meta){
   });
 
   if((d.tips||[]).length){
-    html+=`<div class="tips-box"><div class="tips-title">💡 旅のヒント・持ち物チェック</div>${d.tips.map(t=>`<div class="tip-row">• ${esc(t)}</div>`).join('')}</div>`;
+    html+=`<div class="tips-box">
+      <div class="tips-title">💡 旅のヒント・持ち物チェック</div>
+      ${d.tips.map(t=>`<div class="tip-row">• ${esc(t)}</div>`).join('')}
+    </div>`;
   }
-  html+=`<div class="s-footer">✈️ 🌟 良い旅を！ 🌟 ✈️</div><div class="s-credit">created by tabisora</div></div>`;
+  html+=`<div class="s-footer">✈️ 🌟 良い旅を！ 🌟 ✈️</div>
+    <div class="s-credit">created by tabisora</div>
+  </div>`;
   document.getElementById('shioriContent').innerHTML=html;
 }
 
