@@ -367,6 +367,9 @@ body {
 </div><!-- /app -->
 
 <script>
+/* ===== 🔑 APIキーをここに貼り付けてください ===== */
+const API_KEY = 'sk-ant-xxxxxxxxxxxxxxxxxx'; // ← ここを自分のキーに変更
+
 /* ===== STARS ===== */
 const starsEl = document.getElementById('stars');
 for(let i=0;i<75;i++){
@@ -450,7 +453,12 @@ async function onSubmit(){
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': API_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
@@ -471,7 +479,13 @@ async function onSubmit(){
     stopLoadMsgs();
     document.getElementById('loading').classList.remove('show');
     document.getElementById('formCard').style.display='block';
-    showErr('😢 生成に失敗しました。もう一度お試しください。');
+    if(!API_KEY||API_KEY.includes('xxxxxxxxx')||API_KEY.length<20){
+      showErr('🔑 APIキーが未設定です。index.htmlをメモ帳で開き3行目にAPIキーを貼り付けてください。');
+    } else if(location.protocol==='file:'){
+      showErr('🌐 file://では動きません。同封の start.bat をダブルクリックして http://localhost:8000 で開いてください。');
+    } else {
+      showErr('😢 生成に失敗しました。APIキーを確認してください。');
+    }
   }
 }
 
