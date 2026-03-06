@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>世代バレ診断</title>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0e0e;
+  --card:#161616;
+  --border:rgba(255,255,255,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  min-height:100vh;
+  background:var(--bg);
+  font-family:'Noto Sans JP',sans-serif;
+  color:white;
+  overflow-x:hidden;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.85) rotate(-2deg);opacity:0}65%{transform:scale(1.04) rotate(.5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes scanV{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+@keyframes glow{0%,100%{opacity:.6}50%{opacity:1}}
+@keytml flash{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes reveal{0%{clip-path:inset(0 100% 0 0)}100%{clip-path:inset(0 0% 0 0)}}
+@keyframes barGrow{from{width:0}to{width:var(--w)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+
+/* スキャンライン */
+.scan{position:fixed;top:0;left:0;right:0;height:2px;background:rgba(255,255,0,.05);animation:scanV 6s linear infinite;pointer-events:none;z-index:100;}
+
+/* ティッカー */
+.ticker-wrap{overflow:hidden;background:#ffff00;padding:5px 0;}
+.ticker-inner{display:flex;gap:0;animation:ticker 18s linear infinite;white-space:nowrap;}
+.ticker-item{font-family:'Dela Gothic One',sans-serif;font-size:.7rem;color:#000;padding:0 28px;letter-spacing:1px;}
+
+#app{max-width:440px;margin:0 auto;padding:0 0 80px;position:relative;z-index:1;}
+
+/* ===== TOP ===== */
+.top{animation:fadeUp .5s ease;}
+
+.top-hero{
+  padding:44px 22px 32px;
+  background:linear-gradient(160deg,#1a1a00 0%,#0e0e0e 100%);
+  position:relative;overflow:hidden;
+  border-bottom:2px solid #ffff00;
+}
+.top-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,255,0,.07),transparent 60%);
+}
+.top-label{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:.65rem;letter-spacing:4px;color:#ffff00;
+  margin-bottom:12px;display:block;opacity:.8;
+}
+.top-title{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:3rem;line-height:1;color:white;
+  position:relative;margin-bottom:6px;
+}
+.top-title em{color:#ffff00;font-style:normal;}
+.top-sub{color:rgba(255,255,255,.45);font-size:.8rem;line-height:1.65;margin-top:10px;}
+
+/* 時代アイコン列 */
+.era-row{display:flex;gap:0;margin-top:24px;position:relative;}
+.era-chip{
+  flex:1;text-align:center;padding:10px 4px;
+  border-right:1px solid rgba(255,255,255,.08);
+  font-size:.65rem;color:rgba(255,255,255,.35);
+  line-height:1.4;
+}
+.era-chip:last-child{border-right:none;}
+.era-chip-num{font-family:'Dela Gothic One',sans-serif;font-size:.95rem;display:block;margin-bottom:2px;}
+
+/* スタート */
+.top-body{padding:22px 22px 0;}
+.notice-box{
+  background:rgba(255,255,0,.05);border:1px solid rgba(255,255,0,.2);
+  border-radius:10px;padding:13px 16px;margin-bottom:20px;
+  font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.7;
+}
+.notice-box strong{color:#ffff00;}
+.btn-start{
+  width:100%;padding:17px;border:2px solid #ffff00;cursor:pointer;border-radius:10px;
+  background:transparent;
+  font-family:'Dela Gothic One',sans-serif;font-size:1.15rem;letter-spacing:2px;
+  color:#ffff00;transition:all .18s;
+  position:relative;overflow:hidden;
+}
+.btn-start::before{content:'';position:absolute;inset:0;background:#ffff00;transform:scaleX(0);transform-origin:left;transition:transform .25s ease;}
+.btn-start:hover::before{transform:scaleX(1);}
+.btn-start:hover{color:#000;}
+.btn-start span{position:relative;z-index:1;}
+.q-info{text-align:center;font-size:.7rem;color:rgba(255,255,255,.25);margin-top:10px;}
+
+/* ===== QUIZ ===== */
+.quiz{animation:fadeUp .28s ease;}
+
+.quiz-top{
+  padding:16px 22px 22px;
+  background:#111;
+  border-bottom:1px solid var(--border);
+}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.prog-label{font-family:'Dela Gothic One',sans-serif;font-size:.65rem;letter-spacing:3px;color:rgba(255,255,255,.25);}
+.prog-count{font-family:'Dela Gothic One',sans-serif;font-size:.65rem;color:#ffff00;}
+.prog-track{height:2px;background:rgba(255,255,255,.08);}
+.prog-fill{height:100%;background:#ffff00;transition:width .4s ease;}
+
+.q-body{padding:20px 22px 0;}
+.q-era-hint{
+  display:inline-block;
+  font-family:'Dela Gothic One',sans-serif;font-size:.65rem;letter-spacing:2px;
+  color:#000;background:#ffff00;padding:3px 10px;border-radius:3px;
+  margin-bottom:12px;
+}
+.q-text{font-weight:900;font-size:1.05rem;line-height:1.75;color:white;margin-bottom:6px;}
+.q-sub{font-size:.75rem;color:rgba(255,255,255,.3);margin-bottom:22px;line-height:1.5;}
+
+.opts{display:flex;flex-direction:column;gap:8px;padding:0 22px 32px;}
+.opt{
+  width:100%;text-align:left;padding:14px 16px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  background:rgba(255,255,255,.03);color:rgba(255,255,255,.8);
+  font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:.85rem;
+  line-height:1.55;transition:all .18s;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.opt:hover{background:rgba(255,255,0,.05);border-color:rgba(255,255,0,.3);color:white;}
+.opt.sel{background:rgba(255,255,0,.08);border-color:#ffff00;color:white;}
+.opt-key{
+  font-family:'Dela Gothic One',sans-serif;color:rgba(255,255,0,.4);
+  font-size:.8rem;min-width:18px;margin-top:1px;
+}
+
+/* ===== RESULT ===== */
+.result{animation:pop .55s cubic-bezier(.17,.89,.32,1.28);}
+
+/* 結果カード */
+.res-card{
+  position:relative;overflow:hidden;
+  margin:0;
+}
+.res-card-bg{
+  padding:40px 24px 32px;
+  position:relative;
+}
+.res-year-big{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:6rem;line-height:1;
+  position:relative;
+  animation:float 4s ease infinite;
+}
+.res-year-sub{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:1rem;letter-spacing:3px;color:rgba(255,255,255,.5);
+  margin-bottom:16px;
+}
+
+.res-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid;border-radius:6px;padding:6px 14px;
+  font-family:'Dela Gothic One',sans-serif;font-size:.75rem;letter-spacing:2px;
+  margin-bottom:20px;
+}
+
+.res-desc-card{
+  background:rgba(0,0,0,.4);border-radius:10px;
+  padding:16px 18px;margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.res-desc-text{font-size:.83rem;color:rgba(255,255,255,.78);line-height:1.9;}
+
+/* 世代メーター */
+.era-meter{
+  background:rgba(0,0,0,.3);border-radius:10px;padding:16px 18px;
+  margin-bottom:20px;border:1px solid rgba(255,255,255,.07);
+}
+.era-meter-title{font-family:'Dela Gothic One',sans-serif;font-size:.6rem;letter-spacing:3px;color:rgba(255,255,255,.25);margin-bottom:14px;}
+.era-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.era-bar-label{font-family:'Dela Gothic One',sans-serif;font-size:.7rem;color:rgba(255,255,255,.4);min-width:52px;}
+.era-bar-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden;}
+.era-bar-fill{height:100%;border-radius:100px;transition:width 1s cubic-bezier(.34,1.2,.64,1);}
+.era-bar-pct{font-size:.68rem;color:rgba(255,255,255,.35);min-width:32px;text-align:right;}
+
+/* あるある */
+.aruary{padding:0 24px 20px;}
+.aruary-title{font-family:'Dela Gothic One',sans-serif;font-size:.6rem;letter-spacing:3px;color:rgba(255,255,255,.25);margin-bottom:12px;}
+.aruary-list{display:flex;flex-direction:column;gap:7px;}
+.aruary-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.55;
+  background:rgba(255,255,255,.03);border-radius:7px;padding:10px 12px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.aruary-check{flex-shrink:0;margin-top:1px;}
+
+/* タグ */
+.res-tags{padding:0 24px 20px;display:flex;flex-wrap:wrap;gap:7px;}
+.res-tag{
+  padding:4px 11px;border-radius:4px;
+  font-size:.68rem;font-weight:700;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.1);
+  font-family:'Noto Sans JP',sans-serif;
+}
+
+/* ボタン */
+.res-actions{padding:0 22px 36px;display:flex;flex-direction:column;gap:10px;}
+.btn-copy{
+  width:100%;padding:15px;border:2px solid #ffff00;cursor:pointer;border-radius:8px;
+  background:transparent;color:#ffff00;
+  font-family:'Dela Gothic One',sans-serif;font-size:.9rem;letter-spacing:2px;
+  transition:all .18s;position:relative;overflow:hidden;
+}
+.btn-copy::before{content:'';position:absolute;inset:0;background:#ffff00;transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+.btn-copy:hover::before{transform:scaleX(1);}
+.btn-copy span{position:relative;z-index:1;}
+.btn-copy:hover span{color:#000;}
+.btn-retry{
+  width:100%;padding:13px;border:1px solid rgba(255,255,255,.12);cursor:pointer;border-radius:8px;
+  background:transparent;color:rgba(255,255,255,.4);
+  font-family:'Dela Gothic One',sans-serif;font-size:.85rem;letter-spacing:2px;
+  transition:all .18s;
+}
+.btn-retry:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);}
+
+.toast{
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:#ffff00;color:#000;border-radius:6px;
+  padding:10px 22px;font-size:.78rem;font-weight:900;
+  font-family:'Dela Gothic One',sans-serif;letter-spacing:1px;
+  opacity:0;transition:all .28s;pointer-events:none;z-index:999;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<div id="app"></div>
+<div class="toast" id="toast">COPIED!</div>
+
+<script>
+/* ===================================================
+   質問データ
+   era配点: g80(〜80年代), g90(90年代), g00(00年代), g10(10年代), g20(10年代後半〜現在)
+=================================================== */
+const Qs = [
+  {
+    hint:"📺 テレビ",
+    q:"子供の頃、テレビのチャンネルはどうやって変えてた？",
+    sub:"",
+    opts:[
+      {t:"ガチャガチャ回すやつ",       s:{g80:4,g90:0,g00:0,g10:0,g20:0}},
+      {t:"ボタン式リモコンで操作",      s:{g80:1,g90:3,g00:2,g10:0,g20:0}},
+      {t:"普通にリモコン（当然）",      s:{g80:0,g90:1,g00:3,g10:3,g20:1}},
+      {t:"テレビよりYouTube派だった",   s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+    ]
+  },
+  {
+    hint:"💿 音楽",
+    q:"音楽を聴くとき、最初に思い浮かぶのは？",
+    sub:"",
+    opts:[
+      {t:"カセットテープやLP",          s:{g80:4,g90:1,g00:0,g10:0,g20:0}},
+      {t:"CDをウォークマン・MDで",      s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"iPod・携帯に入れて",          s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"Spotify / Apple Music",       s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"📞 連絡手段",
+    q:"友達との連絡、メインはどれだった？",
+    sub:"",
+    opts:[
+      {t:"固定電話（家の電話）",        s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"ポケベル・PHSからケータイ",   s:{g80:0,g90:4,g00:1,g10:0,g20:0}},
+      {t:"ケータイのメール・SNS（mixi）",s:{g80:0,g90:1,g00:4,g10:1,g20:0}},
+      {t:"LINE一択。電話ほぼしない",     s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🎮 ゲーム",
+    q:"「ゲームといえば」で真っ先に浮かぶのは？",
+    sub:"",
+    opts:[
+      {t:"ファミコン・スーファミ",       s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"プレステ・64・ゲームボーイ",   s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"PS2・ニンテンドーDS・Wii",    s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"スマホゲー・Switch・PC",      s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🏫 学校",
+    q:"学校の連絡・配布物といえば？",
+    sub:"",
+    opts:[
+      {t:"全部紙のプリント（当然）",         s:{g80:4,g90:3,g00:2,g10:1,g20:0}},
+      {t:"プリントもあったけどメールも来た",  s:{g80:0,g90:0,g00:2,g10:3,g20:1}},
+      {t:"連絡帳アプリ・Google Classroom",   s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+      {t:"一人一台iPadかChromebook",         s:{g80:0,g90:0,g00:0,g10:1,g20:4}},
+    ]
+  },
+  {
+    hint:"📸 写真",
+    q:"写真を撮るとき、昔はどうしてた？",
+    sub:"",
+    opts:[
+      {t:"使い捨てカメラ・フィルムカメラ",   s:{g80:4,g90:3,g00:1,g10:0,g20:0}},
+      {t:"デジカメで撮ってPCに転送",          s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"ガラケーで撮ってmixiに上げてた",   s:{g80:0,g90:2,g00:3,g10:1,g20:0}},
+      {t:"スマホで撮ってインスタ・TikTok",    s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+    ]
+  },
+  {
+    hint:"🎵 これわかる？",
+    q:"「着うた」「着メロ」と聞いてピンとくる？",
+    sub:"",
+    opts:[
+      {t:"ピンとこない（何それ？）",                        s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+      {t:"知ってるけどギリ使ってない世代",                  s:{g80:0,g90:0,g00:3,g10:2,g20:0}},
+      {t:"めちゃくちゃ課金してた！懐かし",                  s:{g80:0,g90:3,g00:4,g10:0,g20:0}},
+      {t:"「着メロ」は知ってるけど「着うた」は微妙な年代",  s:{g80:2,g90:3,g00:1,g10:0,g20:0}},
+    ]
+  },
+  {
+    hint:"📺 子供の頃のアニメ",
+    q:"子供の頃に見てたアニメ・特撮は？",
+    sub:"",
+    opts:[
+      {t:"ドラゴンボール・聖闘士星矢・キン肉マン", s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"スラムダンク・幽遊白書・セーラームーン", s:{g80:1,g90:4,g00:1,g10:0,g20:0}},
+      {t:"ナルト・ワンピース・ポケモン（初代）",   s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"鬼滅・呪術・推しの子・アニメはNetflix",  s:{g80:0,g90:0,g00:0,g10:1,g20:4}},
+    ]
+  },
+  {
+    hint:"💻 インターネット",
+    q:"インターネットの「最初の記憶」は？",
+    sub:"",
+    opts:[
+      {t:"ピーガーガー音でダイヤルアップ接続",        s:{g80:3,g90:4,g00:1,g10:0,g20:0}},
+      {t:"Yahoo! JAPANのトップが全て・ネット草創期", s:{g80:1,g90:3,g00:3,g10:0,g20:0}},
+      {t:"mixi・ニコ動・Youtubeに夢中だった",         s:{g80:0,g90:0,g00:4,g10:2,g20:0}},
+      {t:"SNSとYouTubeが最初から普通にあった",        s:{g80:0,g90:0,g00:0,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🛒 買い物",
+    q:"「欲しいものを買う」とき、どうしてた？",
+    sub:"",
+    opts:[
+      {t:"商店街・百貨店・カタログ通販",                 s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"ファッションビル・ラジオ会館系の専門店",       s:{g80:1,g90:3,g00:2,g10:0,g20:0}},
+      {t:"Amazonや楽天で検索して買う",                   s:{g80:0,g90:1,g00:3,g10:3,g20:1}},
+      {t:"TikTokで見つけて即ポチ・メルカリも使う",      s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+    ]
+  },
+  {
+    hint:"😂 笑いの感覚",
+    q:"「これ面白い！」と思うコンテンツは？",
+    sub:"",
+    opts:[
+      {t:"ドリフ・コント・漫才（テレビ全盛期）",  s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"ダウンタウン・爆笑問題・深夜バラエティ", s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"ニコ動・YouTube黎明期・コピペ文化",     s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"ミーム・TikTok・ショート動画",           s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🏠 家の中",
+    q:"子供の頃の家に絶対あったもの、どれ？",
+    sub:"",
+    opts:[
+      {t:"ブラウン管テレビ・VHSビデオデッキ",    s:{g80:4,g90:3,g00:1,g10:0,g20:0}},
+      {t:"CDラジカセ・MDコンポ",                  s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"薄型テレビ・HDD録画機・wi-fiルーター", s:{g80:0,g90:0,g00:3,g10:4,g20:1}},
+      {t:"Alexa・スマートホーム・全部スマホで管理", s:{g80:0,g90:0,g00:0,g10:1,g20:4}},
+    ]
+  },
+];
+
+/* ===================================================
+   世代タイプ
+=================================================== */
+const ERAS = {
+  g80:{
+    year:"80年代", label:"バブル世代・昭和っ子",
+    emoji:"📼",
+    color:"#ff6b35", dark:"#3d1500",
+    desc:"あなたの魂は昭和〜バブル時代に生きている。ドリフで育ち、カセットテープに思い出を録音し、固定電話で恋をした世代。「最近の若者は…」という言葉が出そうになるのをぐっとこらえてる。",
+    araru:["ガチャガチャチャンネルの感触が忘れられない","カセットテープの早巻き&鉛筆技を知ってる","ポケベルの暗号を解読できる","VHSテープの録画予約が一大イベントだった","「iモード」に感動した記憶がある"],
+    tags:["#昭和生まれ","#バブル世代","#アナログ最高","#昭和レトロ","#若者についていけない"],
+    bars:{g80:90,g90:40,g00:15,g10:5,g20:2},
+  },
+  g90:{
+    year:"90年代", label:"ミレニアル世代・ギリ平成っ子",
+    emoji:"📻",
+    color:"#c471f5", dark:"#2d004a",
+    desc:"あなたの魂は90年代に存在する。ポケベル→PHS→ケータイの進化を全部リアルタイムで体験し、CDをレンタルしてMDに録音する手間を愛した世代。mixiのあしあとに翻弄された青春。",
+    araru:["MDに曲を入れる作業に1時間かけてた","ケータイ小説にハマった時期がある","ナップスターかWinnyを使ったことがある（黙秘権あり）","深夜にダイヤルアップでつないでた","mixi日記がリアル友人関係に影響した"],
+    tags:["#90年代生まれ","#ミレニアル","#CD世代","#mixi民","#平成レトロ"],
+    bars:{g80:20,g90:90,g00:45,g10:10,g20:3},
+  },
+  g00:{
+    year:"2000年代", label:"ゆとり世代・ネット黎明期っ子",
+    emoji:"💿",
+    color:"#12c2e9", dark:"#002a40",
+    desc:"あなたの魂は2000年代に宿っている。ニコ動でボカロを発見し、Youtubeのロード画面と戦い、PSPを授業中に隠しながらやってた世代。「ゆとり」と言われるのは心外だけど少し心当たりもある。",
+    araru:["ニコ動の「弾幕」コメントに感動した","ゲームのセーブデータが消えた時の絶望を知ってる","深夜にiTunesでアルバム整理してた","Googleマップが出た時「未来だ」と思った","中学・高校でガラケーの絵文字を極めた"],
+    tags:["#00年代生まれ","#ゆとり世代","#ニコ動民","#ボカロ世代","#Flash黄金期"],
+    bars:{g80:5,g90:30,g00:90,g10:50,g20:10},
+  },
+  g10:{
+    year:"2010年代", label:"Z世代・スマホネイティブ",
+    emoji:"📱",
+    color:"#2ed573", dark:"#003d18",
+    desc:"あなたの魂は2010年代に生きている。スマホが当たり前でインスタがある世界しか知らないデジタルネイティブ。TikTokの登場で世界が変わった体験を持ち、コロナでリモート授業を経験した世代。",
+    araru:["ポケモンGOがリリースされた日の衝撃を覚えてる","ツイッターのトレンドをリアルタイムで追ってた","Zoomで授業を受けたことがある","YouTube Premiumの広告スキップの快感を知ってる","インスタのストーリーに毎日何かあげてた時期がある"],
+    tags:["#Z世代","#スマホネイティブ","#インスタ世代","#10年代生まれ","#コロナ禍経験者"],
+    bars:{g80:2,g90:8,g00:30,g10:90,g20:55},
+  },
+  g20:{
+    year:"2020年代", label:"α世代・デジタル生まれ",
+    emoji:"🤖",
+    color:"#ffff00", dark:"#303000",
+    desc:"あなたの魂は最先端にある。AIが当たり前で、TikTokで情報収集し、生まれた時からYouTubeがあった世代。「電話ってどうやってかけるの？」は本気の疑問。アナログへの憧れはある。",
+    araru:["ChatGPTが出た時を普通のニュースとして受け取った","TikTokで料理・勉強・ニュースを全部学んでる","電話よりLINE電話の方が全然使いやすい","Google先生より先にYouTubeで調べる","NFTやメタバースを本気で信じてた時期がある（かも）"],
+    tags:["#α世代","#デジタルネイティブ","#AI世代","#20年代","#最先端"],
+    bars:{g80:1,g90:3,g00:10,g10:45,g20:90},
+  },
+};
+
+const ERA_LABELS={g80:"80年代",g90:"90年代",g00:"00年代",g10:"10年代",g20:"20年代"};
+const ERA_COLORS={g80:"#ff6b35",g90:"#c471f5",g00:"#12c2e9",g10:"#2ed573",g20:"#ffff00"};
+
+/* ===================================================
+   State
+=================================================== */
+let st={screen:"top",cur:0,scores:{g80:0,g90:0,g00:0,g10:0,g20:0},sel:null};
+const S=p=>{Object.assign(st,p);render();};
+
+/* ===================================================
+   Render
+=================================================== */
+function render(){
+  document.getElementById('app').innerHTML=
+    st.screen==='top'  ? rTop() :
+    st.screen==='quiz' ? rQuiz() : rResult();
+  bind();
+}
+
+function rTop(){
+  const chips=[
+    {y:"'80s",e:"📼"},{y:"'90s",e:"📻"},{y:"'00s",e:"💿"},{y:"'10s",e:"📱"},{y:"'20s",e:"🤖"}
+  ];
+  const ticker=["📺 ダイヤル式チャンネル","📻 カセットテープ","💿 レンタルCD","📱 iモード","🎮 ファミコン","📼 VHS","💌 ポケベル","🖥️ ダイヤルアップ","📻 深夜ラジオ","🎵 着うた"];
+  const t=[...ticker,...ticker].map(i=>`<span class="ticker-item">${i}</span>`).join('');
+
+  return `<div class="top">
+    <div class="ticker-wrap"><div class="ticker-inner">${t}</div></div>
+    <div class="top-hero">
+      <span class="top-label">GENERATION TEST</span>
+      <div class="top-title">世代<em>バレ</em><br>診断</div>
+      <div class="top-sub">12問答えるだけで「あなたの魂が生きてる年代」が判明。<br>世代がバレます。覚悟して。</div>
+      <div class="era-row">
+        ${chips.map(c=>`<div class="era-chip"><span class="era-chip-num">${c.e}</span>${c.y}</div>`).join('')}
+      </div>
+    </div>
+    <div class="top-body">
+      <div class="notice-box">
+        <strong>⚠️ 注意</strong>：このテストは正直に答えると<strong>かなり世代がバレます</strong>。<br>嘘をつくと正確な診断が出ません。
+      </div>
+      <button class="btn-start" id="btn-start"><span>診断スタート →</span></button>
+      <div class="q-info">全12問 · 約1〜2分 · SNSシェア対応</div>
+    </div>
+  </div>`;
+}
+
+function rQuiz(){
+  const q=Qs[st.cur];
+  const pct=(st.cur/Qs.length)*100;
+  const letters=['A','B','C','D'];
+  const opts=q.opts.map((o,i)=>`
+    <button class="opt${st.sel===i?' sel':''}" data-i="${i}">
+      <span class="opt-key">${letters[i]}</span><span>${esc(o.t)}</span>
+    </button>`).join('');
+  return `<div class="quiz">
+    <div class="quiz-top">
+      <div class="prog-row">
+        <span class="prog-label">QUESTION</span>
+        <span class="prog-count">${st.cur+1} / ${Qs.length}</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="q-body">
+      <div class="q-era-hint">${q.hint}</div>
+      <div class="q-text">${esc(q.q)}</div>
+      ${q.sub?`<div class="q-sub">${esc(q.sub)}</div>`:''}
+    </div>
+    <div class="opts">${opts}</div>
+  </div>`;
+}
+
+function rResult(){
+  const top=Object.entries(st.scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const t=ERAS[top];
+  const totalScore=Object.values(st.scores).reduce((a,b)=>a+b,0)||1;
+
+  // バー（スコア正規化）
+  const maxBar=Math.max(...Object.values(t.bars));
+  const barRows=Object.entries(ERA_LABELS).map(([k,label])=>`
+    <div class="era-bar-row">
+      <span class="era-bar-label">${label}</span>
+      <div class="era-bar-track">
+        <div class="era-bar-fill" id="bar-${k}" style="width:0;background:${ERA_COLORS[k]}"></div>
+      </div>
+      <span class="era-bar-pct">${t.bars[k]}%</span>
+    </div>`).join('');
+
+  const arList=t.araru.map(a=>`
+    <div class="aruary-item">
+      <span class="aruary-check">✓</span><span>${esc(a)}</span>
+    </div>`).join('');
+
+  return `<div class="result">
+    <div class="res-card">
+      <div class="res-card-bg" style="background:linear-gradient(160deg,${t.dark} 0%,#0e0e0e 100%);border-bottom:2px solid ${t.color}">
+        <div class="res-year-big" style="color:${t.color}">${t.year}</div>
+        <div class="res-year-sub">YOUR SOUL'S GENERATION</div>
+        <div class="res-badge" style="color:${t.color};border-color:${t.color}55;background:${t.dark}">
+          ${t.emoji} ${t.label}
+        </div>
+        <div class="res-desc-card">
+          <div class="res-desc-text">${t.desc}</div>
+        </div>
+      </div>
+
+      <div style="padding:20px 24px 0">
+        <div class="era-meter">
+          <div class="era-meter-title">世代スコア分布</div>
+          ${barRows}
+        </div>
+      </div>
+    </div>
+
+    <div class="aruary">
+      <div class="aruary-title">あなた世代のあるある</div>
+      <div class="aruary-list">${arList}</div>
+    </div>
+
+    <div class="res-tags">
+      ${t.tags.map(tag=>`<span class="res-tag">${esc(tag)}</span>`).join('')}
+    </div>
+
+    <div class="res-actions">
+      <button class="btn-copy" id="btn-copy"><span>📋 結果をコピーしてシェア</span></button>
+      <button class="btn-retry" id="btn-retry">↺ もう一度やる</button>
+    </div>
+  </div>`;
+}
+
+/* ===================================================
+   アニメ
+=================================================== */
+function animBars(){
+  const top=Object.entries(st.scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const t=ERAS[top];
+  Object.entries(t.bars).forEach(([k,v],i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById('bar-'+k);
+      if(el) el.style.width=v+'%';
+    },150+i*120);
+  });
+}
+
+/* ===================================================
+   Bind
+=================================================== */
+function bind(){
+  const s=document.getElementById('btn-start');
+  if(s) s.onclick=()=>S({screen:'quiz',cur:0,scores:{g80:0,g90:0,g00:0,g10:0,g20:0},sel:null});
+
+  document.querySelectorAll('.opt[data-i]').forEach(btn=>{
+    btn.onclick=()=>{
+      if(st.sel!==null)return;
+      const i=parseInt(btn.dataset.i);
+      const sc=Qs[st.cur].opts[i].s;
+      const ns=Object.fromEntries(Object.entries(st.scores).map(([k,v])=>[k,v+(sc[k]||0)]));
+      S({sel:i});
+      setTimeout(()=>{
+        if(st.cur+1>=Qs.length){S({scores:ns,screen:'result'});setTimeout(animBars,200);}
+        else S({scores:ns,cur:st.cur+1,sel:null});
+      },320);
+    };
+  });
+
+  const rt=document.getElementById('btn-retry');
+  if(rt) rt.onclick=()=>S({screen:'top',cur:0,scores:{g80:0,g90:0,g00:0,g10:0,g20:0},sel:null});
+
+  const cp=document.getElementById('btn-copy');
+  if(cp) cp.onclick=()=>{
+    const top=Object.entries(st.scores).sort((a,b)=>b[1]-a[1])[0][0];
+    const t=ERAS[top];
+    const txt=`【世代バレ診断】\n\n私の魂の世代は…\n${t.emoji} ${t.year}（${t.label}）\n\n${t.desc.slice(0,60)}…\n\n${t.tags.slice(0,3).join(' ')}\n#世代バレ診断 #SNS診断`;
+    navigator.clipboard.writeText(txt)
+      .then(()=>toast('COPIED! 📋'))
+      .catch(()=>toast('手動でコピーしてね 😅'));
+  };
+
+  if(document.querySelector('.result')) setTimeout(animBars,200);
+}
+
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2400);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+render();
+</script>
+</body>
+</html>
