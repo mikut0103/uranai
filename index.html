@@ -3,924 +3,627 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>✈️ tabisora - 旅のしおりメーカー</title>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Zen+Maru+Gothic:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+<title>世代バレ診断</title>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--sky0:#0a1628;--sky1:#1a3a6b;--sky2:#2e6eb5;--sky3:#88c1e8;--accent:#ffdd57;--salmon:#ff7c5c;--mint:#7fffd4;--cream:#fffef8;}
+:root{
+  --bg:#0e0e0e;
+  --card:#161616;
+  --border:rgba(255,255,255,.1);
+}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Noto Sans JP',sans-serif;min-height:100vh;background:linear-gradient(180deg,var(--sky0) 0%,var(--sky1) 38%,var(--sky2) 68%,var(--sky3) 84%,#c8e8f8 94%,#e8f4fb 100%);overflow-x:hidden;}
-#stars{position:fixed;top:0;left:0;right:0;height:55%;pointer-events:none;z-index:0;}
-.star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--d) var(--dl) infinite alternate;}
-@keyframes twinkle{from{opacity:.1}to{opacity:1}}
-#clouds{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.cloud{position:absolute;background:white;border-radius:60px;animation:drift var(--d) var(--dl) linear infinite;}
-@keyframes drift{from{transform:translateX(-300px)}to{transform:translateX(calc(100vw + 300px))}}
-#plane{position:fixed;top:17%;font-size:2.4rem;z-index:5;pointer-events:none;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));animation:planeFly 20s linear infinite,planeWobble 4s ease-in-out infinite;}
-@keyframes planeFly{from{left:-100px}to{left:calc(100vw + 100px)}}
-@keyframes planeWobble{0%,100%{transform:rotate(4deg) translateY(0)}50%{transform:rotate(-2deg) translateY(-12px)}}
-#app{position:relative;z-index:10;max-width:480px;margin:0 auto;padding:0 16px 60px;}
-.header{text-align:center;padding:64px 0 36px;animation:fadeUp .8s ease;}
-.logo{font-family:'Pacifico',cursive;font-size:3rem;color:var(--accent);text-shadow:0 4px 20px rgba(255,221,87,.5),0 2px 4px rgba(0,0,0,.3);}
-.tagline{color:rgba(255,255,255,.72);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;margin-top:7px;}
-.glass{background:rgba(255,255,255,.11);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.28);border-radius:28px;padding:28px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:fadeUp .8s ease .15s both;}
-.card-title{text-align:center;color:white;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:24px;}
-.field{margin-bottom:18px;}
-.field label{display:block;color:rgba(255,255,255,.88);font-size:.74rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
-.field input,.field select,.field textarea{width:100%;border-radius:14px;padding:12px 15px;border:1.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.13);color:white;font-family:'Noto Sans JP',sans-serif;font-size:.93rem;outline:none;transition:border-color .25s,background .25s,box-shadow .25s;}
-.field select{background:rgba(20,50,110,.85);cursor:pointer;}
-.field textarea{resize:none;}
-.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.35);}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:rgba(255,255,255,.2);box-shadow:0 0 20px rgba(255,221,87,.2);}
-.pills{display:flex;flex-wrap:wrap;gap:7px;}
-.pill{padding:7px 13px;border-radius:100px;border:1.5px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:rgba(255,255,255,.82);font-size:.79rem;cursor:pointer;transition:all .22s;user-select:none;font-family:'Noto Sans JP',sans-serif;}
-.pill:hover{border-color:var(--accent);color:var(--accent);}
-.pill.on{background:var(--accent);border-color:var(--accent);color:#1a3a6b;font-weight:700;box-shadow:0 4px 14px rgba(255,221,87,.42);}
-.transports{display:flex;gap:8px;flex-wrap:wrap;}
-.tp{flex:1;min-width:66px;text-align:center;padding:10px 6px;border-radius:14px;border:1.5px solid rgba(255,255,255,.26);background:rgba(255,255,255,.1);color:rgba(255,255,255,.82);font-size:.74rem;cursor:pointer;transition:all .22s;user-select:none;font-family:'Noto Sans JP',sans-serif;}
-.tp .ic{font-size:1.4rem;display:block;margin-bottom:3px;}
-.tp:hover{border-color:var(--mint);}
-.tp.on{background:var(--mint);border-color:var(--mint);color:#083828;font-weight:700;box-shadow:0 4px 14px rgba(127,255,212,.32);}
-.err{display:none;margin-top:12px;background:rgba(255,70,70,.18);border:1px solid rgba(255,70,70,.38);border-radius:13px;padding:11px 15px;color:#ffaaaa;font-size:.84rem;text-align:center;}
-.err.show{display:block;}
-.btn-submit{width:100%;margin-top:22px;padding:15px;border:none;border-radius:100px;background:linear-gradient(135deg,var(--accent),var(--salmon));color:#1a3a6b;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:1.05rem;cursor:pointer;box-shadow:0 8px 28px rgba(255,221,87,.4);transition:transform .25s,box-shadow .25s;}
-.btn-submit:hover{transform:translateY(-2px);box-shadow:0 14px 38px rgba(255,221,87,.58);}
-.btn-submit:active{transform:none;}
-#loading{display:none;text-align:center;padding:70px 0;}
-#loading.show{display:block;}
-.plane-bounce{font-size:3.5rem;display:inline-block;animation:bounce 1.6s ease-in-out infinite;}
-@keyframes bounce{0%,100%{transform:translateY(0) rotate(4deg)}50%{transform:translateY(-20px) rotate(-3deg)}}
-.loading-txt{color:rgba(255,255,255,.82);font-size:.95rem;margin-top:20px;animation:pulse 1.5s infinite;}
-@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
-#shiori{display:none;}
-#shiori.show{display:block;animation:fadeUp .8s ease;}
-.s-cover{background:linear-gradient(145deg,#fff9e8,#ffe8d6);border-radius:26px 26px 0 0;padding:30px 22px 22px;text-align:center;box-shadow:0 -4px 24px rgba(0,0,0,.1);}
-.s-cover-title{font-family:'Pacifico',cursive;font-size:1.75rem;color:var(--salmon);margin-bottom:4px;}
-.s-cover-sub{font-size:.7rem;color:#b09080;letter-spacing:3px;text-transform:uppercase;}
-.s-emoji{font-size:2rem;margin:14px 0 6px;}
-.s-dest{font-family:'Zen Maru Gothic',sans-serif;font-size:1.5rem;font-weight:900;color:#3a1a0a;}
-.s-copy{font-size:.82rem;color:#8a6050;margin-top:5px;font-style:italic;}
-.s-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px;}
-.badge{background:rgba(255,107,157,.1);border:1px solid rgba(255,107,157,.28);border-radius:100px;padding:4px 11px;font-size:.72rem;color:#c05080;font-weight:700;}
-.badge.theme{background:rgba(255,221,87,.13);border-color:rgba(210,150,0,.28);color:#a07010;}
-.s-body{background:var(--cream);padding:20px 18px 30px;border-radius:0 0 26px 26px;box-shadow:0 20px 55px rgba(0,0,0,.14);}
-.day-block{margin-bottom:22px;}
-.day-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.day-label{color:white;font-family:'Zen Maru Gothic',sans-serif;font-weight:900;font-size:.72rem;padding:4px 12px;border-radius:100px;white-space:nowrap;}
-.day-ttl{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.95rem;color:#2a1a0a;}
-.timeline{position:relative;padding-left:20px;}
-.tl-line{position:absolute;left:6px;top:0;bottom:0;width:2px;border-radius:2px;}
-.tl-item{position:relative;margin-bottom:13px;}
-.tl-dot{position:absolute;left:-17px;top:7px;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.15);}
-.tl-time{font-size:.7rem;font-weight:700;letter-spacing:1px;margin-bottom:3px;}
-.act-card{border-radius:13px;padding:11px 13px;box-shadow:0 3px 14px rgba(0,0,0,.07);border-left:3px solid;transition:transform .2s,box-shadow .2s;cursor:default;}
-.act-card:hover{transform:translateX(4px);box-shadow:0 6px 22px rgba(0,0,0,.1);}
-.act-name{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.9rem;color:#2a1a0a;margin-bottom:3px;}
-.act-desc{font-size:.77rem;color:#7a6a5a;line-height:1.55;}
-.act-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;}
-.act-tag{font-size:.64rem;padding:2px 8px;border-radius:100px;font-weight:700;border:1px solid;}
-.divider{text-align:center;font-size:1.1rem;margin:14px 0;opacity:.4;}
-.tips-box{background:linear-gradient(135deg,#e8f4ff,#f0e8ff);border-radius:17px;padding:17px;margin-top:8px;border:1px dashed rgba(130,80,200,.28);}
-.tips-title{font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.86rem;color:#6040b0;margin-bottom:10px;}
-.tip-row{font-size:.78rem;color:#5a4a7a;padding:6px 0;border-bottom:1px dashed rgba(130,80,200,.18);line-height:1.55;}
-.tip-row:last-child{border-bottom:none;}
-.s-footer{text-align:center;margin-top:24px;font-size:1.5rem;}
-.s-credit{text-align:center;color:#ccc;font-size:.68rem;margin-top:8px;}
-.btn-back{display:block;width:100%;margin-top:18px;padding:14px;border:2px solid rgba(255,255,255,.44);border-radius:100px;background:transparent;color:white;font-family:'Zen Maru Gothic',sans-serif;font-weight:700;font-size:.9rem;cursor:pointer;transition:background .25s;}
-.btn-back:hover{background:rgba(255,255,255,.14);}
-@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+body{
+  min-height:100vh;
+  background:var(--bg);
+  font-family:'Noto Sans JP',sans-serif;
+  color:white;
+  overflow-x:hidden;
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.85) rotate(-2deg);opacity:0}65%{transform:scale(1.04) rotate(.5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes scanV{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+@keyframes glow{0%,100%{opacity:.6}50%{opacity:1}}
+@keytml flash{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes reveal{0%{clip-path:inset(0 100% 0 0)}100%{clip-path:inset(0 0% 0 0)}}
+@keyframes barGrow{from{width:0}to{width:var(--w)}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+
+/* スキャンライン */
+.scan{position:fixed;top:0;left:0;right:0;height:2px;background:rgba(255,255,0,.05);animation:scanV 6s linear infinite;pointer-events:none;z-index:100;}
+
+/* ティッカー */
+.ticker-wrap{overflow:hidden;background:#ffff00;padding:5px 0;}
+.ticker-inner{display:flex;gap:0;animation:ticker 18s linear infinite;white-space:nowrap;}
+.ticker-item{font-family:'Dela Gothic One',sans-serif;font-size:.7rem;color:#000;padding:0 28px;letter-spacing:1px;}
+
+#app{max-width:440px;margin:0 auto;padding:0 0 80px;position:relative;z-index:1;}
+
+/* ===== TOP ===== */
+.top{animation:fadeUp .5s ease;}
+
+.top-hero{
+  padding:44px 22px 32px;
+  background:linear-gradient(160deg,#1a1a00 0%,#0e0e0e 100%);
+  position:relative;overflow:hidden;
+  border-bottom:2px solid #ffff00;
+}
+.top-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,255,0,.07),transparent 60%);
+}
+.top-label{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:.65rem;letter-spacing:4px;color:#ffff00;
+  margin-bottom:12px;display:block;opacity:.8;
+}
+.top-title{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:3rem;line-height:1;color:white;
+  position:relative;margin-bottom:6px;
+}
+.top-title em{color:#ffff00;font-style:normal;}
+.top-sub{color:rgba(255,255,255,.45);font-size:.8rem;line-height:1.65;margin-top:10px;}
+
+/* 時代アイコン列 */
+.era-row{display:flex;gap:0;margin-top:24px;position:relative;}
+.era-chip{
+  flex:1;text-align:center;padding:10px 4px;
+  border-right:1px solid rgba(255,255,255,.08);
+  font-size:.65rem;color:rgba(255,255,255,.35);
+  line-height:1.4;
+}
+.era-chip:last-child{border-right:none;}
+.era-chip-num{font-family:'Dela Gothic One',sans-serif;font-size:.95rem;display:block;margin-bottom:2px;}
+
+/* スタート */
+.top-body{padding:22px 22px 0;}
+.notice-box{
+  background:rgba(255,255,0,.05);border:1px solid rgba(255,255,0,.2);
+  border-radius:10px;padding:13px 16px;margin-bottom:20px;
+  font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.7;
+}
+.notice-box strong{color:#ffff00;}
+.btn-start{
+  width:100%;padding:17px;border:2px solid #ffff00;cursor:pointer;border-radius:10px;
+  background:transparent;
+  font-family:'Dela Gothic One',sans-serif;font-size:1.15rem;letter-spacing:2px;
+  color:#ffff00;transition:all .18s;
+  position:relative;overflow:hidden;
+}
+.btn-start::before{content:'';position:absolute;inset:0;background:#ffff00;transform:scaleX(0);transform-origin:left;transition:transform .25s ease;}
+.btn-start:hover::before{transform:scaleX(1);}
+.btn-start:hover{color:#000;}
+.btn-start span{position:relative;z-index:1;}
+.q-info{text-align:center;font-size:.7rem;color:rgba(255,255,255,.25);margin-top:10px;}
+
+/* ===== QUIZ ===== */
+.quiz{animation:fadeUp .28s ease;}
+
+.quiz-top{
+  padding:16px 22px 22px;
+  background:#111;
+  border-bottom:1px solid var(--border);
+}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.prog-label{font-family:'Dela Gothic One',sans-serif;font-size:.65rem;letter-spacing:3px;color:rgba(255,255,255,.25);}
+.prog-count{font-family:'Dela Gothic One',sans-serif;font-size:.65rem;color:#ffff00;}
+.prog-track{height:2px;background:rgba(255,255,255,.08);}
+.prog-fill{height:100%;background:#ffff00;transition:width .4s ease;}
+
+.q-body{padding:20px 22px 0;}
+.q-era-hint{
+  display:inline-block;
+  font-family:'Dela Gothic One',sans-serif;font-size:.65rem;letter-spacing:2px;
+  color:#000;background:#ffff00;padding:3px 10px;border-radius:3px;
+  margin-bottom:12px;
+}
+.q-text{font-weight:900;font-size:1.05rem;line-height:1.75;color:white;margin-bottom:6px;}
+.q-sub{font-size:.75rem;color:rgba(255,255,255,.3);margin-bottom:22px;line-height:1.5;}
+
+.opts{display:flex;flex-direction:column;gap:8px;padding:0 22px 32px;}
+.opt{
+  width:100%;text-align:left;padding:14px 16px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  background:rgba(255,255,255,.03);color:rgba(255,255,255,.8);
+  font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:.85rem;
+  line-height:1.55;transition:all .18s;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.opt:hover{background:rgba(255,255,0,.05);border-color:rgba(255,255,0,.3);color:white;}
+.opt.sel{background:rgba(255,255,0,.08);border-color:#ffff00;color:white;}
+.opt-key{
+  font-family:'Dela Gothic One',sans-serif;color:rgba(255,255,0,.4);
+  font-size:.8rem;min-width:18px;margin-top:1px;
+}
+
+/* ===== RESULT ===== */
+.result{animation:pop .55s cubic-bezier(.17,.89,.32,1.28);}
+
+/* 結果カード */
+.res-card{
+  position:relative;overflow:hidden;
+  margin:0;
+}
+.res-card-bg{
+  padding:40px 24px 32px;
+  position:relative;
+}
+.res-year-big{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:6rem;line-height:1;
+  position:relative;
+  animation:float 4s ease infinite;
+}
+.res-year-sub{
+  font-family:'Dela Gothic One',sans-serif;
+  font-size:1rem;letter-spacing:3px;color:rgba(255,255,255,.5);
+  margin-bottom:16px;
+}
+
+.res-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid;border-radius:6px;padding:6px 14px;
+  font-family:'Dela Gothic One',sans-serif;font-size:.75rem;letter-spacing:2px;
+  margin-bottom:20px;
+}
+
+.res-desc-card{
+  background:rgba(0,0,0,.4);border-radius:10px;
+  padding:16px 18px;margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.res-desc-text{font-size:.83rem;color:rgba(255,255,255,.78);line-height:1.9;}
+
+/* 世代メーター */
+.era-meter{
+  background:rgba(0,0,0,.3);border-radius:10px;padding:16px 18px;
+  margin-bottom:20px;border:1px solid rgba(255,255,255,.07);
+}
+.era-meter-title{font-family:'Dela Gothic One',sans-serif;font-size:.6rem;letter-spacing:3px;color:rgba(255,255,255,.25);margin-bottom:14px;}
+.era-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.era-bar-label{font-family:'Dela Gothic One',sans-serif;font-size:.7rem;color:rgba(255,255,255,.4);min-width:52px;}
+.era-bar-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden;}
+.era-bar-fill{height:100%;border-radius:100px;transition:width 1s cubic-bezier(.34,1.2,.64,1);}
+.era-bar-pct{font-size:.68rem;color:rgba(255,255,255,.35);min-width:32px;text-align:right;}
+
+/* あるある */
+.aruary{padding:0 24px 20px;}
+.aruary-title{font-family:'Dela Gothic One',sans-serif;font-size:.6rem;letter-spacing:3px;color:rgba(255,255,255,.25);margin-bottom:12px;}
+.aruary-list{display:flex;flex-direction:column;gap:7px;}
+.aruary-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.55;
+  background:rgba(255,255,255,.03);border-radius:7px;padding:10px 12px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.aruary-check{flex-shrink:0;margin-top:1px;}
+
+/* タグ */
+.res-tags{padding:0 24px 20px;display:flex;flex-wrap:wrap;gap:7px;}
+.res-tag{
+  padding:4px 11px;border-radius:4px;
+  font-size:.68rem;font-weight:700;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.1);
+  font-family:'Noto Sans JP',sans-serif;
+}
+
+/* ボタン */
+.res-actions{padding:0 22px 36px;display:flex;flex-direction:column;gap:10px;}
+.btn-copy{
+  width:100%;padding:15px;border:2px solid #ffff00;cursor:pointer;border-radius:8px;
+  background:transparent;color:#ffff00;
+  font-family:'Dela Gothic One',sans-serif;font-size:.9rem;letter-spacing:2px;
+  transition:all .18s;position:relative;overflow:hidden;
+}
+.btn-copy::before{content:'';position:absolute;inset:0;background:#ffff00;transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+.btn-copy:hover::before{transform:scaleX(1);}
+.btn-copy span{position:relative;z-index:1;}
+.btn-copy:hover span{color:#000;}
+.btn-retry{
+  width:100%;padding:13px;border:1px solid rgba(255,255,255,.12);cursor:pointer;border-radius:8px;
+  background:transparent;color:rgba(255,255,255,.4);
+  font-family:'Dela Gothic One',sans-serif;font-size:.85rem;letter-spacing:2px;
+  transition:all .18s;
+}
+.btn-retry:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);}
+
+.toast{
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:#ffff00;color:#000;border-radius:6px;
+  padding:10px 22px;font-size:.78rem;font-weight:900;
+  font-family:'Dela Gothic One',sans-serif;letter-spacing:1px;
+  opacity:0;transition:all .28s;pointer-events:none;z-index:999;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-<div id="stars"></div>
-<div id="clouds"></div>
-<div id="plane">✈️</div>
-<div id="app">
-  <div class="header">
-    <div class="logo">tabisora</div>
-    <div class="tagline">✨ 旅のしおりメーカー ✨</div>
-  </div>
-  <div class="glass" id="formCard">
-    <div class="card-title">🗺️ 旅の情報を入力してね</div>
-    <div class="field">
-      <label>📍 出発地</label>
-      <input id="f-dep" type="text" placeholder="例：東京、大阪、福岡...">
-    </div>
-    <div class="field">
-      <label>🗓️ 旅の期間</label>
-      <select id="f-dur">
-        <option value="">選んでね</option>
-        <option>日帰り（0泊1日）</option>
-        <option>1泊2日</option>
-        <option>2泊3日</option>
-        <option>3泊4日</option>
-        <option>4泊5日</option>
-        <option>約1週間（6〜7日）</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>🎨 旅のテーマ（複数OK）</label>
-      <div class="pills">
-        <div class="pill" data-v="グルメ">🍜 グルメ</div>
-        <div class="pill" data-v="自然・絶景">🌄 自然・絶景</div>
-        <div class="pill" data-v="カフェ巡り">☕ カフェ巡り</div>
-        <div class="pill" data-v="歴史・文化">⛩️ 歴史・文化</div>
-        <div class="pill" data-v="インスタ映え">📸 インスタ映え</div>
-        <div class="pill" data-v="温泉・癒し">♨️ 温泉・癒し</div>
-        <div class="pill" data-v="アクティビティ">🏄 アクティビティ</div>
-        <div class="pill" data-v="ショッピング">🛍️ ショッピング</div>
-        <div class="pill" data-v="アニメ・ポップカルチャー">🎌 アニメ</div>
-        <div class="pill" data-v="夜景・バー">🌃 夜景・バー</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>🚗 移動方法</label>
-      <div class="transports">
-        <div class="tp" data-v="✈️ 飛行機"><span class="ic">✈️</span>飛行機</div>
-        <div class="tp" data-v="🚄 新幹線"><span class="ic">🚄</span>新幹線</div>
-        <div class="tp" data-v="🚗 レンタカー"><span class="ic">🚗</span>レンタカー</div>
-        <div class="tp" data-v="🚌 バス"><span class="ic">🚌</span>バス</div>
-        <div class="tp" data-v="🚢 フェリー"><span class="ic">🚢</span>フェリー</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>🌍 行き先（任意）</label>
-      <input id="f-dest" type="text" placeholder="例：京都、北海道、沖縄、台湾...">
-    </div>
-    <div class="field">
-      <label>💬 ひとこと希望（任意）</label>
-      <textarea id="f-memo" rows="2" placeholder="例：女子旅2人、予算1日1万円、自然が好き..."></textarea>
-    </div>
-    <div class="err" id="errMsg"></div>
-    <button class="btn-submit" onclick="onSubmit()">✈️ しおりを作る！</button>
-  </div>
-  <div id="loading">
-    <div class="plane-bounce">✈️</div>
-    <div class="loading-txt" id="loadTxt">旅のしおりを作成中...</div>
-  </div>
-  <div id="shiori">
-    <div id="shioriContent"></div>
-    <button class="btn-back" onclick="goBack()">← もう一度作る</button>
-  </div>
-</div>
+<div class="scan"></div>
+<div id="app"></div>
+<div class="toast" id="toast">COPIED!</div>
 
 <script>
-/* ===== STARS ===== */
-const starsEl=document.getElementById('stars');
-for(let i=0;i<75;i++){
-  const s=document.createElement('div');s.className='star';
-  const sz=Math.random()*2.5+1;
-  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${sz}px;height:${sz}px;--d:${2+Math.random()*3}s;--dl:${Math.random()*4}s`;
-  starsEl.appendChild(s);
-}
-
-/* ===== CLOUDS ===== */
-const cloudsEl=document.getElementById('clouds');
-[[130,42,'13%','26s','0s',.5],[185,56,'55%','37s','-9s',.62],[90,30,'33%','21s','-5s',.38],[155,48,'73%','41s','-17s',.68]].forEach(([w,h,t,d,dl,o])=>{
-  const c=document.createElement('div');c.className='cloud';
-  c.style.cssText=`width:${w}px;height:${h}px;top:${t};opacity:${o};--d:${d};--dl:${dl}`;
-  cloudsEl.appendChild(c);
-});
-
-/* ===== PILLS ===== */
-document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>p.classList.toggle('on'));
-document.querySelectorAll('.tp').forEach(p=>p.onclick=()=>{
-  document.querySelectorAll('.tp').forEach(x=>x.classList.remove('on'));
-  p.classList.add('on');
-});
-
-/* ===== LOADING MSGS ===== */
-const MSGS=['旅のしおりを作成中...','✨ おすすめスポット探してるよ...','🗺️ ルートを考えてるよ...','🌟 もうすぐ出発！'];
-let midx=0,mtimer=null;
-function startMsgs(){
-  midx=0;document.getElementById('loadTxt').textContent=MSGS[0];
-  mtimer=setInterval(()=>{midx=(midx+1)%MSGS.length;document.getElementById('loadTxt').textContent=MSGS[midx];},1800);
-}
-function stopMsgs(){clearInterval(mtimer);}
-
-/* ===== COLORS ===== */
-const COLORS=[
-  {b:'#ff7c5c',bg:'#fff5f2'},{b:'#ff9a5c',bg:'#fff8f0'},
-  {b:'#ffb347',bg:'#fffbf0'},{b:'#ff6b9d',bg:'#fff0f6'},
-  {b:'#9b59b6',bg:'#f8f0ff'},{b:'#3498db',bg:'#f0f8ff'},
-  {b:'#2ecc71',bg:'#f0fff4'}
+/* ===================================================
+   質問データ
+   era配点: g80(〜80年代), g90(90年代), g00(00年代), g10(10年代), g20(10年代後半〜現在)
+=================================================== */
+const Qs = [
+  {
+    hint:"📺 テレビ",
+    q:"子供の頃、テレビのチャンネルはどうやって変えてた？",
+    sub:"",
+    opts:[
+      {t:"ガチャガチャ回すやつ",       s:{g80:4,g90:0,g00:0,g10:0,g20:0}},
+      {t:"ボタン式リモコンで操作",      s:{g80:1,g90:3,g00:2,g10:0,g20:0}},
+      {t:"普通にリモコン（当然）",      s:{g80:0,g90:1,g00:3,g10:3,g20:1}},
+      {t:"テレビよりYouTube派だった",   s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+    ]
+  },
+  {
+    hint:"💿 音楽",
+    q:"音楽を聴くとき、最初に思い浮かぶのは？",
+    sub:"",
+    opts:[
+      {t:"カセットテープやLP",          s:{g80:4,g90:1,g00:0,g10:0,g20:0}},
+      {t:"CDをウォークマン・MDで",      s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"iPod・携帯に入れて",          s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"Spotify / Apple Music",       s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"📞 連絡手段",
+    q:"友達との連絡、メインはどれだった？",
+    sub:"",
+    opts:[
+      {t:"固定電話（家の電話）",        s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"ポケベル・PHSからケータイ",   s:{g80:0,g90:4,g00:1,g10:0,g20:0}},
+      {t:"ケータイのメール・SNS（mixi）",s:{g80:0,g90:1,g00:4,g10:1,g20:0}},
+      {t:"LINE一択。電話ほぼしない",     s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🎮 ゲーム",
+    q:"「ゲームといえば」で真っ先に浮かぶのは？",
+    sub:"",
+    opts:[
+      {t:"ファミコン・スーファミ",       s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"プレステ・64・ゲームボーイ",   s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"PS2・ニンテンドーDS・Wii",    s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"スマホゲー・Switch・PC",      s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🏫 学校",
+    q:"学校の連絡・配布物といえば？",
+    sub:"",
+    opts:[
+      {t:"全部紙のプリント（当然）",         s:{g80:4,g90:3,g00:2,g10:1,g20:0}},
+      {t:"プリントもあったけどメールも来た",  s:{g80:0,g90:0,g00:2,g10:3,g20:1}},
+      {t:"連絡帳アプリ・Google Classroom",   s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+      {t:"一人一台iPadかChromebook",         s:{g80:0,g90:0,g00:0,g10:1,g20:4}},
+    ]
+  },
+  {
+    hint:"📸 写真",
+    q:"写真を撮るとき、昔はどうしてた？",
+    sub:"",
+    opts:[
+      {t:"使い捨てカメラ・フィルムカメラ",   s:{g80:4,g90:3,g00:1,g10:0,g20:0}},
+      {t:"デジカメで撮ってPCに転送",          s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"ガラケーで撮ってmixiに上げてた",   s:{g80:0,g90:2,g00:3,g10:1,g20:0}},
+      {t:"スマホで撮ってインスタ・TikTok",    s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+    ]
+  },
+  {
+    hint:"🎵 これわかる？",
+    q:"「着うた」「着メロ」と聞いてピンとくる？",
+    sub:"",
+    opts:[
+      {t:"ピンとこない（何それ？）",                        s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+      {t:"知ってるけどギリ使ってない世代",                  s:{g80:0,g90:0,g00:3,g10:2,g20:0}},
+      {t:"めちゃくちゃ課金してた！懐かし",                  s:{g80:0,g90:3,g00:4,g10:0,g20:0}},
+      {t:"「着メロ」は知ってるけど「着うた」は微妙な年代",  s:{g80:2,g90:3,g00:1,g10:0,g20:0}},
+    ]
+  },
+  {
+    hint:"📺 子供の頃のアニメ",
+    q:"子供の頃に見てたアニメ・特撮は？",
+    sub:"",
+    opts:[
+      {t:"ドラゴンボール・聖闘士星矢・キン肉マン", s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"スラムダンク・幽遊白書・セーラームーン", s:{g80:1,g90:4,g00:1,g10:0,g20:0}},
+      {t:"ナルト・ワンピース・ポケモン（初代）",   s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"鬼滅・呪術・推しの子・アニメはNetflix",  s:{g80:0,g90:0,g00:0,g10:1,g20:4}},
+    ]
+  },
+  {
+    hint:"💻 インターネット",
+    q:"インターネットの「最初の記憶」は？",
+    sub:"",
+    opts:[
+      {t:"ピーガーガー音でダイヤルアップ接続",        s:{g80:3,g90:4,g00:1,g10:0,g20:0}},
+      {t:"Yahoo! JAPANのトップが全て・ネット草創期", s:{g80:1,g90:3,g00:3,g10:0,g20:0}},
+      {t:"mixi・ニコ動・Youtubeに夢中だった",         s:{g80:0,g90:0,g00:4,g10:2,g20:0}},
+      {t:"SNSとYouTubeが最初から普通にあった",        s:{g80:0,g90:0,g00:0,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🛒 買い物",
+    q:"「欲しいものを買う」とき、どうしてた？",
+    sub:"",
+    opts:[
+      {t:"商店街・百貨店・カタログ通販",                 s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"ファッションビル・ラジオ会館系の専門店",       s:{g80:1,g90:3,g00:2,g10:0,g20:0}},
+      {t:"Amazonや楽天で検索して買う",                   s:{g80:0,g90:1,g00:3,g10:3,g20:1}},
+      {t:"TikTokで見つけて即ポチ・メルカリも使う",      s:{g80:0,g90:0,g00:0,g10:2,g20:4}},
+    ]
+  },
+  {
+    hint:"😂 笑いの感覚",
+    q:"「これ面白い！」と思うコンテンツは？",
+    sub:"",
+    opts:[
+      {t:"ドリフ・コント・漫才（テレビ全盛期）",  s:{g80:4,g90:2,g00:0,g10:0,g20:0}},
+      {t:"ダウンタウン・爆笑問題・深夜バラエティ", s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"ニコ動・YouTube黎明期・コピペ文化",     s:{g80:0,g90:1,g00:4,g10:2,g20:0}},
+      {t:"ミーム・TikTok・ショート動画",           s:{g80:0,g90:0,g00:1,g10:3,g20:4}},
+    ]
+  },
+  {
+    hint:"🏠 家の中",
+    q:"子供の頃の家に絶対あったもの、どれ？",
+    sub:"",
+    opts:[
+      {t:"ブラウン管テレビ・VHSビデオデッキ",    s:{g80:4,g90:3,g00:1,g10:0,g20:0}},
+      {t:"CDラジカセ・MDコンポ",                  s:{g80:1,g90:4,g00:2,g10:0,g20:0}},
+      {t:"薄型テレビ・HDD録画機・wi-fiルーター", s:{g80:0,g90:0,g00:3,g10:4,g20:1}},
+      {t:"Alexa・スマートホーム・全部スマホで管理", s:{g80:0,g90:0,g00:0,g10:1,g20:4}},
+    ]
+  },
 ];
 
-/* ===== 目的地別・実在スポットDB ===== */
-// 目的地名 → テーマ → スポットリスト（実在する場所・店名）
-const SPOT_DB={
-  '京都':{
-    'グルメ':['錦市場','第一旭本店（ラーメン）','瓢亭（懐石）','京都中央市場','麵屋たけ井','三嶋亭（すき焼き）','豆腐料理 松ヶ枝'],
-    '自然・絶景':['嵐山竹林','貴船神社','高台寺','鞍馬山','京都御苑','大原三千院','保津川渓谷'],
-    'カフェ巡り':['% Arabica 京都東山','スマート珈琲店','イノダコーヒ本店','六曜社地下店','La Voiture','茶寮都路里 祇園本店'],
-    '歴史・文化':['金閣寺','清水寺','伏見稲荷大社','二条城','嵐山天龍寺','東寺','祇園白川'],
-    'インスタ映え':['伏見稲荷（千本鳥居）','竹林の小径','八坂庚申堂','哲学の道','貴船神社（水占い）','嵐山渡月橋'],
-    '温泉・癒し':['花ノ庄（嵐山温泉）','辨慶（嵐山温泉）','貴船荘（貴船温泉）'],
-    'ショッピング':['錦市場','新京極商店街','三条通','河原町オーパ','京都ポルタ'],
-    'アニメ・ポップカルチャー':['京都国際マンガミュージアム','東映太秦映画村','アニメイト京都'],
-    '夜景・バー':['将軍塚青龍殿（夜景）','東山夜間ライトアップ','Bar K6','先斗町 木屋町エリア'],
+/* ===================================================
+   世代タイプ
+=================================================== */
+const ERAS = {
+  g80:{
+    year:"80年代", label:"バブル世代・昭和っ子",
+    emoji:"📼",
+    color:"#ff6b35", dark:"#3d1500",
+    desc:"あなたの魂は昭和〜バブル時代に生きている。ドリフで育ち、カセットテープに思い出を録音し、固定電話で恋をした世代。「最近の若者は…」という言葉が出そうになるのをぐっとこらえてる。",
+    araru:["ガチャガチャチャンネルの感触が忘れられない","カセットテープの早巻き&鉛筆技を知ってる","ポケベルの暗号を解読できる","VHSテープの録画予約が一大イベントだった","「iモード」に感動した記憶がある"],
+    tags:["#昭和生まれ","#バブル世代","#アナログ最高","#昭和レトロ","#若者についていけない"],
+    bars:{g80:90,g90:40,g00:15,g10:5,g20:2},
   },
-  '大阪':{
-    'グルメ':['道頓堀（たこ焼き巡り）','金龍ラーメン','今井（うどん）','黒門市場','づぼらや（ふぐ）','自由軒（カレー）','鶴橋コリアンタウン'],
-    '自然・絶景':['大阪城公園','天王寺公園','万博記念公園','服部緑地'],
-    'カフェ巡り':['% Arabica 大阪中之島','堀江カフェ街','心斎橋 TRUNK COFFEE','カフェ ド ランブル'],
-    '歴史・文化':['大阪城','住吉大社','四天王寺','道頓堀（グリコサイン）','適塾'],
-    'インスタ映え':['道頓堀グリコサイン','大阪城（夜桜）','海遊館','あべのハルカス展望台'],
-    '温泉・癒し':['スパワールド','なにわの湯','延羽の湯（鶴橋）'],
-    'ショッピング':['心斎橋筋商店街','アメリカ村','天神橋筋商店街','なんばシティ','大丸心斎橋店'],
-    'アニメ・ポップカルチャー':['でんでんタウン（日本橋）','アニメイト大阪日本橋','USJウィザーディングワールド'],
-    '夜景・バー':['あべのハルカス（展望台）','HEP FIVEジャイアントホイール','バー バックベンチャー（北新地）'],
+  g90:{
+    year:"90年代", label:"ミレニアル世代・ギリ平成っ子",
+    emoji:"📻",
+    color:"#c471f5", dark:"#2d004a",
+    desc:"あなたの魂は90年代に存在する。ポケベル→PHS→ケータイの進化を全部リアルタイムで体験し、CDをレンタルしてMDに録音する手間を愛した世代。mixiのあしあとに翻弄された青春。",
+    araru:["MDに曲を入れる作業に1時間かけてた","ケータイ小説にハマった時期がある","ナップスターかWinnyを使ったことがある（黙秘権あり）","深夜にダイヤルアップでつないでた","mixi日記がリアル友人関係に影響した"],
+    tags:["#90年代生まれ","#ミレニアル","#CD世代","#mixi民","#平成レトロ"],
+    bars:{g80:20,g90:90,g00:45,g10:10,g20:3},
   },
-  '東京':{
-    'グルメ':['築地場外市場','一蘭 新宿店','すし さいとう（銀座）','東京ラーメンストリート','もんじゃ焼き 月島','豊洲市場見学ツアー'],
-    '自然・絶景':['高尾山','奥多摩','新宿御苑','小石川後楽園','皇居東御苑'],
-    'カフェ巡り':['Blue Bottle Coffee 清澄白河','猿田彦珈琲 恵比寿','ウェスト 六本木','ヴィロン 渋谷','FUGLEN TOKYO（代々木公園）'],
-    '歴史・文化':['浅草寺','東京国立博物館','明治神宮','江戸東京博物館','寛永寺（上野）'],
-    'インスタ映え':['渋谷スクランブル交差点','東京スカイツリー','チームラボボーダレス（豊洲）','お台場 ガンダム立像','原宿・竹下通り'],
-    '温泉・癒し':['大江戸温泉物語（お台場）','東京湯楽城（足立区）','泉天空の湯 有明ガーデン'],
-    'ショッピング':['渋谷スクランブルスクエア','表参道ヒルズ','二子玉川ライズ','アメ横（上野）','東急ハンズ渋谷'],
-    'アニメ・ポップカルチャー':['秋葉原電気街','ジャンプショップ（東京ソラマチ）','アニメイト池袋','鬼子母神（ちびまる子聖地）'],
-    '夜景・バー':['東京スカイツリー展望台','六本木ヒルズ展望台','ホテルバー ニューオータニ','Bar Benfiddich（新宿）'],
+  g00:{
+    year:"2000年代", label:"ゆとり世代・ネット黎明期っ子",
+    emoji:"💿",
+    color:"#12c2e9", dark:"#002a40",
+    desc:"あなたの魂は2000年代に宿っている。ニコ動でボカロを発見し、Youtubeのロード画面と戦い、PSPを授業中に隠しながらやってた世代。「ゆとり」と言われるのは心外だけど少し心当たりもある。",
+    araru:["ニコ動の「弾幕」コメントに感動した","ゲームのセーブデータが消えた時の絶望を知ってる","深夜にiTunesでアルバム整理してた","Googleマップが出た時「未来だ」と思った","中学・高校でガラケーの絵文字を極めた"],
+    tags:["#00年代生まれ","#ゆとり世代","#ニコ動民","#ボカロ世代","#Flash黄金期"],
+    bars:{g80:5,g90:30,g00:90,g10:50,g20:10},
   },
-  '仙台':{
-    'グルメ':['牛タン炭焼 利久（本店）','たんや善治郎','仙台朝市','ずんだ茶寮（ずんだシェイク）','阿部蒲鉾店','すし哲（寿司）'],
-    '自然・絶景':['松島（日本三景）','蔵王（樹氷）','秋保大滝','鳴子峡','栗駒山'],
-    'カフェ巡り':['カフェ モーツァルト アトリエ','ROKUYOSHI（ロクヨシ）','コーヒーハウス Bojo','珈琲焙煎所 旅の音'],
-    '歴史・文化':['青葉城址（仙台城跡）','瑞鳳殿','仙台市博物館','塩竈神社','平泉・中尊寺（日帰り可）'],
-    'インスタ映え':['松島（五大堂）','青葉城址（夜景）','仙台七夕まつり（8月）','ずんだシェイク 仙台駅'],
-    '温泉・癒し':['秋保温泉（ホテル佐勘）','作並温泉（鷹泉閣 岩松旅館）','鳴子温泉'],
-    'ショッピング':['仙台朝市','一番町商店街','仙台パルコ','エスパル仙台','S-PAL'],
-    'アニメ・ポップカルチャー':['アニメイト仙台','東北大学（けいおん！聖地）'],
-    '夜景・バー':['青葉城址からの夜景','仙台・光のページェント（12月）','Bar STAG（国分町）'],
+  g10:{
+    year:"2010年代", label:"Z世代・スマホネイティブ",
+    emoji:"📱",
+    color:"#2ed573", dark:"#003d18",
+    desc:"あなたの魂は2010年代に生きている。スマホが当たり前でインスタがある世界しか知らないデジタルネイティブ。TikTokの登場で世界が変わった体験を持ち、コロナでリモート授業を経験した世代。",
+    araru:["ポケモンGOがリリースされた日の衝撃を覚えてる","ツイッターのトレンドをリアルタイムで追ってた","Zoomで授業を受けたことがある","YouTube Premiumの広告スキップの快感を知ってる","インスタのストーリーに毎日何かあげてた時期がある"],
+    tags:["#Z世代","#スマホネイティブ","#インスタ世代","#10年代生まれ","#コロナ禍経験者"],
+    bars:{g80:2,g90:8,g00:30,g10:90,g20:55},
   },
-  '金沢':{
-    'グルメ':['近江町市場（海鮮丼）','金沢おでん 黒百合','すし処 めくみ','ひゃくまんさん（B級グルメ）','谷口屋（おでん）','加賀料理 銭屋'],
-    '自然・絶景':['兼六園','能登半島（日帰り）','白山比咩神社','金沢城公園','日本海沿岸'],
-    'カフェ巡り':['カフェ エクレア','higashiyama monzen（東山）','omphalos coffee','茶屋街カフェ'],
-    '歴史・文化':['兼六園','金沢城公園','ひがし茶屋街','武家屋敷跡 野村家','金沢21世紀美術館'],
-    'インスタ映え':['ひがし茶屋街','主計町茶屋街','金沢21世紀美術館（プール）','鼓門（金沢駅）'],
-    '温泉・癒し':['山代温泉（加賀）','山中温泉','片山津温泉','粟津温泉'],
-    'ショッピング':['近江町市場','金沢百番街','香林坊','竪町商店街'],
-    'アニメ・ポップカルチャー':['アニメイト金沢','金沢おでん文化体験'],
-    '夜景・バー':['兼六園ライトアップ','金沢城ライトアップ','Bar Oxa（香林坊）'],
+  g20:{
+    year:"2020年代", label:"α世代・デジタル生まれ",
+    emoji:"🤖",
+    color:"#ffff00", dark:"#303000",
+    desc:"あなたの魂は最先端にある。AIが当たり前で、TikTokで情報収集し、生まれた時からYouTubeがあった世代。「電話ってどうやってかけるの？」は本気の疑問。アナログへの憧れはある。",
+    araru:["ChatGPTが出た時を普通のニュースとして受け取った","TikTokで料理・勉強・ニュースを全部学んでる","電話よりLINE電話の方が全然使いやすい","Google先生より先にYouTubeで調べる","NFTやメタバースを本気で信じてた時期がある（かも）"],
+    tags:["#α世代","#デジタルネイティブ","#AI世代","#20年代","#最先端"],
+    bars:{g80:1,g90:3,g00:10,g10:45,g20:90},
   },
-  '博多':{
-    'グルメ':['一蘭本社総本店（ラーメン）','水炊き 博多 華味鳥','中洲屋台（博多ラーメン・もつ鍋）','博多うどん 因幡うどん','餃子の一芳亭'],
-    '自然・絶景':['志賀島','糸島（二見ヶ浦）','油山市民の森','博多湾サンセット'],
-    'カフェ巡り':['COFFEE COUNTY（福岡）','光と風のカフェ（糸島）','COBI COFFEE','MANU COFFEE 薬院'],
-    '歴史・文化':['太宰府天満宮','博多祇園山笠（7月）','福岡城跡','住吉神社','元寇防塁'],
-    'インスタ映え':['糸島・二見ヶ浦（夫婦岩）','太宰府天満宮','キャナルシティ博多','博多駅前広場'],
-    '温泉・癒し':['原鶴温泉','二日市温泉','博多温泉（千代の湯）'],
-    'ショッピング':['キャナルシティ博多','博多阪急','天神地下街','マリノアシティ福岡（アウトレット）'],
-    'アニメ・ポップカルチャー':['アニメイト福岡','ソフマップ天神','博多マルイ（コラボイベント）'],
-    '夜景・バー':['福岡タワー展望台','百道浜の夜景','Bar Barns（中洲）','屋台（中洲・天神）'],
-  },
-  '広島':{
-    'グルメ':['お好み焼き ぼん（本通り）','麵屋 一道（広島ラーメン）','牡蠣小屋（宮島口）','廿日市（はつかいち）の牡蠣','ランチBOX（汁なし担担麺）'],
-    '自然・絶景':['宮島（厳島神社・弥山）','帝釈峡','三段峡','吾妻山','世羅高原農場'],
-    'カフェ巡り':['Obscura Coffee Roasters広島','今川焼き 金曜堂（宮島）','カフェ・シャンソン','広島蔦屋書店 カフェ'],
-    '歴史・文化':['原爆ドーム（世界遺産）','平和記念公園','縮景園','厳島神社（宮島）','広島城'],
-    'インスタ映え':['厳島神社 大鳥居（干潮時）','宮島の鹿','原爆ドーム（夜）','しまなみ海道'],
-    '温泉・癒し':['湯来温泉','宮浜温泉','竹原（たけはら）の湯'],
-    'ショッピング':['本通り商店街','広島パルコ','エディオン蔦屋家電','袋町小学校の近く セレクトショップ'],
-    'アニメ・ポップカルチャー':['アニメイト広島','まんが王国（広島）'],
-    '夜景・バー':['広島城ライトアップ','おりづるタワー展望台','バー ウィスキーワン（流川）'],
-  },
-  '那覇':{
-    'グルメ':['第一牧志公設市場','ゆうなんぎい（沖縄料理）','麺屋 琉球赤道（沖縄そば）','国際通り屋台村','むつみ橋かどや（ゴーヤチャンプルー）'],
-    '自然・絶景':['美ら海水族館（本部）','万座毛（恩納村）','残波岬','玉泉洞（おきなわワールド）'],
-    'カフェ巡り':['カフェ ハコニワ','PORTRIVER MARKET','ZHYVAGO COFFEE WORKS','ウミカジテラス（豊見城）'],
-    '歴史・文化':['首里城','玉陵（たまうどぅん）','識名園','斎場御嶽（世界遺産）','琉球村'],
-    'インスタ映え':['古宇利大橋','ティーヌ浜（ハートロック）','備瀬のフクギ並木','ウミカジテラス'],
-    '温泉・癒し':['琉球温泉 龍神の湯','スパリゾートおきなわ','ゆいまーる（ナチュラルスパ）'],
-    'ショッピング':['国際通り','牧志公設市場','那覇メインプレイス','ドン・キホーテ国際通り店'],
-    'アニメ・ポップカルチャー':['アニメイト那覇'],
-    '夜景・バー':['国際通り（夜）','美浜アメリカンビレッジ（夜）','Bar Helios（那覇）'],
-  },
-  '函館':{
-    'グルメ':['朝市（函館朝市 えきに市場）','ラッキーピエロ（B級グルメ）','五島軒（洋食）','函館ビヤホール','海鮮居酒屋 魚一心'],
-    '自然・絶景':['函館山（夜景）','大沼国定公園','恵山岬','トラピスト修道院','昭和新山'],
-    'カフェ巡り':['シャロン（元町）','café テトラ','ペリカン（函館山麓）'],
-    '歴史・文化':['五稜郭公園','元町エリア（旧外国人居留地）','函館ハリストス正教会','旧函館区公会堂','函館市地域交流まちづくりセンター'],
-    'インスタ映え':['函館山からの夜景（世界三大夜景）','赤レンガ倉庫','元町の坂道','八幡坂'],
-    '温泉・癒し':['湯の川温泉（函館国際ホテル）','笹流ダム方面の温泉','一乃松（湯の川）'],
-    'ショッピング':['函館朝市','金森赤レンガ倉庫','棒二森屋（百貨店）','丸井今井函館店'],
-    'アニメ・ポップカルチャー':['アニメイト函館'],
-    '夜景・バー':['函館山展望台','五稜郭タワー夜景','Bar Shuffle（大門）'],
-  },
-  '長崎':{
-    'グルメ':['中華街（ちゃんぽん 江山楼）','桃若（皿うどん）','吉宗（茶碗蒸し）','浜勝（とんかつ）','長崎和牛 囲炉裏 一月庵'],
-    '自然・絶景':['雲仙地獄','九十九島（展望台）','稲佐山（夜景）','西海国立公園'],
-    'カフェ巡り':['丸山珈琲（長崎店）','喫茶 ソワレ','カフェ とっとき（出島ワーフ）'],
-    '歴史・文化':['グラバー園','大浦天主堂','出島（出島ワーフ）','平和公園','原爆資料館'],
-    'インスタ映え':['稲佐山夜景（世界三大夜景）','グラバー園','大浦天主堂','ランタンフェスティバル（春節）'],
-    '温泉・癒し':['雲仙温泉','小浜温泉（日本一の温泉ながさき）'],
-    'ショッピング':['浜の町アーケード','長崎駅かもめ市場','眼鏡橋周辺 雑貨店'],
-    'アニメ・ポップカルチャー':['アニメイト長崎'],
-    '夜景・バー':['稲佐山展望台','グラバースカイロード','バー　英国屋'],
-  },
-  '奈良':{
-    'グルメ':['奈良 柿の葉寿司 平宗','春鹿（日本酒・今西清兵衛商店）','天理スタミナラーメン','くるみの木（カフェ）'],
-    '自然・絶景':['若草山','室生寺（紅葉）','曽爾高原（ススキ）','吉野山（桜）','天川村（みたらい渓谷）'],
-    'カフェ巡り':['くるみの木','ほうせき箱（かき氷）','茶房 暖暖','カナカナ（奈良町）'],
-    '歴史・文化':['東大寺（大仏）','春日大社','興福寺','法隆寺','唐招提寺','奈良町（ならまち）'],
-    'インスタ映え':['東大寺（鹿と大仏）','春日大社（万燈籠まつり）','吉野山の桜','奈良公園の鹿'],
-    '温泉・癒し':['入之波温泉（山鳩湯）','洞川温泉','天の川温泉センター'],
-    'ショッピング':['奈良町（ならまち）','近鉄奈良駅周辺','中川政七商店（本店）'],
-    'アニメ・ポップカルチャー':['アニメイト奈良（近くは大阪）'],
-    '夜景・バー':['若草山ライトアップ','東大寺 夜間ライトアップ（観月祭）'],
-  },
-  '鎌倉':{
-    'グルメ':['鎌倉 峰本（そば）','イワタコーヒー店（ホットケーキ）','鎌倉 松原庵（そば）','小町通りの食べ歩き','由比ガ浜の海の家'],
-    '自然・絶景':['稲村ヶ崎','大仏切通し','源氏山公園','江ノ島（日帰り）','七里ヶ浜'],
-    'カフェ巡り':['GARDEN HOUSE（長谷）','BREAD IT BE（小町通り）','鎌倉 歐林洞','オクシモロン（小町通り）'],
-    '歴史・文化':['鶴岡八幡宮','建長寺','円覚寺','報国寺（竹林）','高徳院（鎌倉大仏）'],
-    'インスタ映え':['報国寺（竹林）','長谷寺（あじさい）','江ノ電 七里ヶ浜','稲村ヶ崎からの富士山'],
-    '温泉・癒し':['江ノ島温泉（稚児ヶ淵）','長谷（波音の湯）'],
-    'ショッピング':['小町通り商店街','鎌倉駅東口 散策','鎌倉彫 商店'],
-    'アニメ・ポップカルチャー':['スラムダンク踏切（七里ヶ浜）','映画「海街diary」ロケ地'],
-    '夜景・バー':['稲村ヶ崎 夕日','江ノ島サムエルコッキング苑（ライトアップ）'],
-  },
-  'default':{
-    'グルメ':['地元の朝市','駅前の老舗食堂','観光客に人気の名物料理店','地元スーパー（食材探し）','B級グルメの名店'],
-    '自然・絶景':['地元の展望台','国立公園・自然公園','川沿いの遊歩道','海岸・湖岸の絶景スポット'],
-    'カフェ巡り':['地元の人気スペシャルティカフェ','古民家を改装したカフェ','駅近のおしゃれカフェ','絶景が楽しめるカフェ'],
-    '歴史・文化':['地元の神社・仏閣','郷土博物館','旧市街の歴史的建造物','伝統工芸体験施設'],
-    'インスタ映え':['地元の映えスポット','フォトジェニックな商店街','展望スポット','ライトアップイベント会場'],
-    '温泉・癒し':['地元の温泉旅館','日帰り温泉施設','足湯スポット','スパ・サウナ施設'],
-    'アクティビティ':['地元のアウトドア体験施設','レンタサイクル','ハイキングコース','地元の体験スポット'],
-    'ショッピング':['地元の商店街','駅ビル・ショッピングモール','地元マーケット','アウトレット'],
-    'アニメ・ポップカルチャー':['地元のアニメイト・まんが喫茶','聖地スポット','ゲームセンター','コラボカフェ'],
-    '夜景・バー':['地元の展望台（夜景）','バー・居酒屋街','ライトアップスポット'],
-  }
 };
 
-// 目的地からスポットを取得（実在名 → なければデフォルト）
-function getSpots(destination, theme){
-  const destDB = SPOT_DB[destination] || SPOT_DB['default'];
-  return destDB[theme] || destDB['グルメ'] || SPOT_DB['default']['グルメ'];
+const ERA_LABELS={g80:"80年代",g90:"90年代",g00:"00年代",g10:"10年代",g20:"20年代"};
+const ERA_COLORS={g80:"#ff6b35",g90:"#c471f5",g00:"#12c2e9",g10:"#2ed573",g20:"#ffff00"};
+
+/* ===================================================
+   State
+=================================================== */
+let st={screen:"top",cur:0,scores:{g80:0,g90:0,g00:0,g10:0,g20:0},sel:null};
+const S=p=>{Object.assign(st,p);render();};
+
+/* ===================================================
+   Render
+=================================================== */
+function render(){
+  document.getElementById('app').innerHTML=
+    st.screen==='top'  ? rTop() :
+    st.screen==='quiz' ? rQuiz() : rResult();
+  bind();
 }
 
-/* ===== テーマ別 行動テキスト ===== */
-const DB={
-  'グルメ':{
-    am:['朝市で地元食材を満喫','老舗喫茶でモーニングセット','名物パン屋で朝ごはん'],
-    mid:['名物ランチをがっつり','地元の定食屋でランチ','話題の料理店でランチ'],
-    pm:['地元居酒屋で夕食','人気レストランでディナー','屋台・食べ歩きを楽しむ'],
-    tips:['食べ歩き用の袋を持参しよう','お腹を空かせてから行くのが鉄則！','地元のB級グルメも忘れずに']
-  },
-  '自然・絶景':{
-    am:['早朝の絶景を独り占め','朝霧の中をハイキング','日の出スポットへ'],
-    mid:['絶景を眺めながらランチ','自然公園をトレッキング','湖畔・海岸でのんびり'],
-    pm:['夕日の名所で絶景鑑賞','星空観察','夕暮れの散策'],
-    tips:['動きやすいスニーカーは必須','天気予報を事前にチェック','早起きが絶景への近道']
-  },
-  'カフェ巡り':{
-    am:['オープン直後を狙って1軒目','人気モーニングカフェへ','隠れ家カフェでゆったり'],
-    mid:['ランチもカフェで','こだわりコーヒーを堪能','ブックカフェでまったり'],
-    pm:['夜カフェでスイーツ','おしゃれバーカフェ','〆のコーヒーショップ'],
-    tips:['モバイルバッテリーを忘れずに','混む前の開店直後を狙おう','SNSで最新情報を確認して']
-  },
-  '歴史・文化':{
-    am:['朝の神社・仏閣を参拝（人が少ない！）','博物館オープンに合わせて','歴史地区の朝散歩'],
-    mid:['郷土料理でランチ','伝統工芸体験','歴史的町並みを散策'],
-    pm:['夜のライトアップ名所へ','伝統芸能鑑賞','歴史地区の夜散歩'],
-    tips:['事前に歴史を軽く調べると2倍楽しい','御朱印帳を持参しよう','ガイドツアーも選択肢のひとつ']
-  },
-  'インスタ映え':{
-    am:['朝のゴールデンタイムに撮影','フォトジェニックなモーニング','アートスポット巡り'],
-    mid:['映えランチ（見た目重視）','フォトスポット巡り','インスタ映えカフェ'],
-    pm:['夕暮れの絶景ショット','ライトアップ撮影','夜景フォトスポット'],
-    tips:['三脚かセルフィースティックを持参','ゴールデンタイムは日の出・日没前後','衣装を現地テーマに合わせよう']
-  },
-  '温泉・癒し':{
-    am:['朝風呂でリフレッシュ','温泉街を朝散歩','旅館の朝食をゆっくり堪能'],
-    mid:['日帰り温泉でのんびり','足湯カフェ','温泉まんじゅうを食べ歩き'],
-    pm:['夜の露天風呂','温泉街の夜散歩','旅館でお部屋食'],
-    tips:['バスタオルと着替えを多めに','早め早めの時間帯が空いてておすすめ','温泉後は保湿クリームを忘れずに']
-  },
-  'アクティビティ':{
-    am:['朝イチのアクティビティ体験','ハイキングスタート','カヤック・SUP体験'],
-    mid:['マリンスポーツ体験','ジップライン・アドベンチャー','サイクリングツアー'],
-    pm:['夕方のボートクルーズ','BBQ・アウトドア','夕焼けの中でクールダウン'],
-    tips:['動きやすい服装で行こう','事前予約が安心','怪我防止のためウォームアップを']
-  },
-  'ショッピング':{
-    am:['商店街を朝から散策','骨董市・フリマを物色','地元パン屋・スイーツ巡り'],
-    mid:['ショッピングモールを探索','地元マーケット','お土産セレクト中'],
-    pm:['夜のショッピング','ナイトマーケット','閉店前にお土産買い込む'],
-    tips:['エコバッグを持参しよう','帰りの荷物スペースを計算して','クレジットカードと現金両方準備']
-  },
-  'アニメ・ポップカルチャー':{
-    am:['聖地巡礼スタート','アニメショップのオープン待ち','キャラクターカフェでモーニング'],
-    mid:['ガチャガチャ巡り','限定グッズをゲット','コスプレ撮影スポットへ'],
-    pm:['ゲームセンターで盛り上がる','アニメイベントへ','夜のオタク街探索'],
-    tips:['限定グッズは午前中に！売り切れ注意','聖地マップをスマホに保存しておこう','コスプレOKスポットを事前に確認']
-  },
-  '夜景・バー':{
-    am:['チェックイン後に昼間の観光','定番スポットを昼に下見','夕方に向けてのんびり準備'],
-    mid:['展望レストランで早めのディナー','夜景が見えるカフェで休憩','日没前に夜景スポットへ移動'],
-    pm:['展望台で夜景を堪能','おしゃれバーで一杯','屋上バーで乾杯！'],
-    tips:['夜は気温が下がるので上着を','お酒は飲み過ぎ注意・代行・電車を確認','カメラの夜景モードを練習しておこう']
-  }
-};
+function rTop(){
+  const chips=[
+    {y:"'80s",e:"📼"},{y:"'90s",e:"📻"},{y:"'00s",e:"💿"},{y:"'10s",e:"📱"},{y:"'20s",e:"🤖"}
+  ];
+  const ticker=["📺 ダイヤル式チャンネル","📻 カセットテープ","💿 レンタルCD","📱 iモード","🎮 ファミコン","📼 VHS","💌 ポケベル","🖥️ ダイヤルアップ","📻 深夜ラジオ","🎵 着うた"];
+  const t=[...ticker,...ticker].map(i=>`<span class="ticker-item">${i}</span>`).join('');
 
-// 出発地・移動手段・日数から現実的な目的地を返す
-// short=1〜2泊、mid=3〜4泊、long=5泊以上
-const REACHABLE={
-  '飛行機':{
-    '東北':{
-      short:['大阪','福岡','広島','名古屋','那覇'],
-      mid:['那覇','石垣島','福岡','広島','大阪','長崎','鹿児島'],
-      long:['那覇','石垣島','宮古島','鹿児島','長崎','函館']
-    },
-    '関東':{
-      short:['大阪','福岡','仙台','札幌','広島'],
-      mid:['那覇','福岡','広島','鹿児島','長崎','函館'],
-      long:['那覇','石垣島','宮古島','鹿児島','長崎','函館']
-    },
-    '近畿':{
-      short:['福岡','仙台','札幌','広島','東京'],
-      mid:['那覇','福岡','鹿児島','函館','仙台'],
-      long:['那覇','石垣島','宮古島','函館','鹿児島']
-    },
-    '九州':{
-      short:['大阪','東京','名古屋','広島','仙台'],
-      mid:['那覇','東京','大阪','名古屋','函館'],
-      long:['那覇','石垣島','宮古島','函館','仙台']
-    },
-    'default':{
-      short:['大阪','福岡','仙台','広島'],
-      mid:['那覇','福岡','広島','大阪','函館'],
-      long:['那覇','石垣島','福岡','広島','函館']
-    }
-  },
-  '新幹線':{
-    '北海道':{
-      short:['仙台','盛岡'],
-      mid:['東京','仙台'],
-      long:['東京','大宮']
-    },
-    '東北':{
-      short:['仙台','山形','郡山'],
-      mid:['東京','仙台','大宮','盛岡'],
-      long:['東京','京都','大阪','金沢']
-    },
-    '関東':{
-      short:['仙台','宇都宮','長野','新潟'],
-      mid:['京都','大阪','金沢','仙台','広島'],
-      long:['博多','広島','京都','大阪','金沢']
-    },
-    '中部':{
-      short:['名古屋','長野','静岡'],
-      mid:['東京','大阪','京都','金沢'],
-      long:['博多','広島','大阪','京都','東京']
-    },
-    '近畿':{
-      short:['名古屋','岡山','姫路'],
-      mid:['東京','広島','博多','金沢'],
-      long:['東京','博多','広島','仙台']
-    },
-    '中国':{
-      short:['広島','岡山','姫路'],
-      mid:['大阪','京都','博多','東京'],
-      long:['東京','大阪','京都','博多']
-    },
-    '四国':{
-      short:['岡山','広島'],
-      mid:['大阪','京都','博多'],
-      long:['東京','大阪','京都']
-    },
-    '九州':{
-      short:['博多','長崎','熊本'],
-      mid:['大阪','京都','広島'],
-      long:['東京','大阪','京都','広島']
-    },
-    'default':{
-      short:['仙台','大宮','名古屋'],
-      mid:['東京','大阪','京都','金沢'],
-      long:['博多','広島','京都','大阪']
-    }
-  },
-  'レンタカー':{
-    '北海道':{
-      short:['小樽','富良野'],
-      mid:['旭川','釧路','帯広','洞爺湖'],
-      long:['ニセコ','積丹','知床','稚内']
-    },
-    '東北':{
-      short:['松島','山寺','蔵王'],
-      mid:['角館','十和田','奥入瀬'],
-      long:['会津若松','津軽','恐山']
-    },
-    '関東':{
-      short:['箱根','日光','鎌倉'],
-      mid:['那須','草津','伊豆'],
-      long:['奥多摩','妙高','志賀高原']
-    },
-    '中部':{
-      short:['松本','諏訪'],
-      mid:['高山','白川郷','上高地'],
-      long:['伊勢','志摩','木曽路','乗鞍']
-    },
-    '近畿':{
-      short:['奈良','神戸'],
-      mid:['伊勢','高野山','和歌山'],
-      long:['丹後','びわ湖','熊野']
-    },
-    '中国':{
-      short:['倉敷','宮島'],
-      mid:['出雲','松江','津和野'],
-      long:['萩','蒜山','大山']
-    },
-    '四国':{
-      short:['道後','高松'],
-      mid:['高知','内子','祖谷'],
-      long:['四万十','室戸','足摺']
-    },
-    '九州':{
-      short:['由布院','別府'],
-      mid:['阿蘇','雲仙','天草'],
-      long:['指宿','霧島','黒川温泉']
-    },
-    '沖縄':{
-      short:['名護','本部'],
-      mid:['今帰仁','恩納村'],
-      long:['糸満','やんばる','南城']
-    },
-    'default':{
-      short:['箱根','鎌倉'],
-      mid:['日光','草津','伊豆'],
-      long:['白川郷','高山','松本']
-    }
-  },
-  'バス':{
-    '東北':{short:['仙台','山形'],mid:['松島','角館'],long:['平泉','秋田']},
-    '関東':{short:['日光','鎌倉'],mid:['草津','軽井沢'],long:['箱根','金沢']},
-    '中部':{short:['松本','長野'],mid:['高山','白川郷'],long:['金沢','富山']},
-    '近畿':{short:['奈良','神戸'],mid:['京都','和歌山'],long:['広島','岡山']},
-    '九州':{short:['博多','長崎'],mid:['熊本','由布院'],long:['別府','鹿児島']},
-    'default':{short:['仙台','京都'],mid:['金沢','奈良'],long:['広島','博多']}
-  },
-  'フェリー':{
-    '東北':{short:['苫小牧'],mid:['函館','新潟'],long:['仙台']},
-    '関東':{short:['苫小牧','宮崎'],mid:['那覇','徳島'],long:['北九州']},
-    '近畿':{short:['大分','北九州'],mid:['那覇','東京'],long:['那覇','石垣島']},
-    '九州':{short:['那覇'],mid:['大阪','東京'],long:['那覇','石垣島']},
-    '沖縄':{short:['奄美大島'],mid:['石垣島'],long:['宮古島','与那国島']},
-    'default':{short:['那覇'],mid:['石垣島','北九州'],long:['那覇','苫小牧']}
-  }
-};
-
-function getRegion(dep){
-  if(/北海道|札幌|函館|旭川|帯広|釧路|小樽|苫小牧/.test(dep)) return '北海道';
-  if(/青森|岩手|宮城|秋田|山形|福島|仙台|盛岡|郡山|いわき|八戸|山形/.test(dep)) return '東北';
-  if(/東京|神奈川|埼玉|千葉|茨城|栃木|群馬|横浜|川崎|さいたま|宇都宮|前橋|水戸/.test(dep)) return '関東';
-  if(/新潟|富山|石川|福井|山梨|長野|岐阜|静岡|愛知|金沢|名古屋|浜松/.test(dep)) return '中部';
-  if(/三重|滋賀|京都|大阪|兵庫|奈良|和歌山|神戸/.test(dep)) return '近畿';
-  if(/鳥取|島根|岡山|広島|山口/.test(dep)) return '中国';
-  if(/徳島|香川|愛媛|高知|松山|高松/.test(dep)) return '四国';
-  if(/福岡|佐賀|長崎|熊本|大分|宮崎|鹿児島|博多|北九州/.test(dep)) return '九州';
-  if(/沖縄|那覇|石垣|宮古/.test(dep)) return '沖縄';
-  return 'default';
-}
-
-function getTransKey(trans){
-  if(trans.includes('飛行機')) return '飛行機';
-  if(trans.includes('新幹線')) return '新幹線';
-  if(trans.includes('レンタカー')) return 'レンタカー';
-  if(trans.includes('バス')) return 'バス';
-  if(trans.includes('フェリー')) return 'フェリー';
-  return '新幹線';
-}
-
-function suggestDestination(dep, trans, numDays){
-  const tkey = getTransKey(trans);
-  const region = getRegion(dep);
-  const map = REACHABLE[tkey] || REACHABLE['新幹線'];
-  const regionMap = map[region] || map['default'] || {short:[],mid:[],long:[]};
-  // 日数で距離感を分類
-  const durKey = numDays <= 2 ? 'short' : numDays <= 4 ? 'mid' : 'long';
-  let candidates = regionMap[durKey] || regionMap['short'] || [];
-  // 出発地名と被るものを除外
-  candidates = candidates.filter(d => !dep.includes(d) && !d.includes(dep.slice(0,2)));
-  return candidates.length ? rnd(candidates) : (durKey==='short'?'仙台':durKey==='mid'?'京都':'那覇');
-}
-
-const DAY_TITLES=[
-  ['出発！まずは定番スポットへ','地元の魅力を全力で満喫','テーマを深掘りする日'],
-  ['朝から全力で楽しむ日','のんびり気分で街を散策','旅の醍醐味、全部詰め込む'],
-  ['最終日は思い出ラッシュ','帰る前にもう一か所','悔いなし！ラストスパート']
-];
-
-const CATCHCOPIES=[
-  '{dest}で最高の思い出を','{dest}、全力で楽しもう！',
-  '心が躍る{dest}の旅','忘れられない{dest}へ',
-  '{dest}で自分だけの旅を','{dest}に恋をした旅'
-];
-
-const EMOJI_MAP={
-  'グルメ':'🍜','自然・絶景':'🌄','カフェ巡り':'☕','歴史・文化':'⛩️',
-  'インスタ映え':'📸','温泉・癒し':'♨️','アクティビティ':'🏄',
-  'ショッピング':'🛍️','アニメ・ポップカルチャー':'🎌','夜景・バー':'🌃'
-};
-
-function rnd(arr){return arr[Math.floor(Math.random()*arr.length)];}
-function addMin(hhmm, min){
-  const [h,m]=hhmm.split(':').map(Number);
-  const total=h*60+m+min;
-  return `${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`;
-}
-
-// 移動手段×地方ごとの所要時間（分）
-const TRAVEL_TIME={
-  '飛行機':{'北海道':180,'東北':90,'関東':90,'中部':100,'近畿':110,'中国':120,'四国':120,'九州':130,'沖縄':150,'default':120},
-  '新幹線':{'北海道':200,'東北':90,'関東':120,'中部':100,'近畿':140,'中国':160,'四国':160,'九州':180,'沖縄':300,'default':120},
-  'レンタカー':{'北海道':120,'東北':90,'関東':90,'中部':100,'近畿':90,'中国':100,'四国':100,'九州':100,'沖縄':60,'default':90},
-  'バス':{'北海道':150,'東北':120,'関東':120,'中部':150,'近畿':120,'中国':150,'四国':150,'九州':150,'沖縄':90,'default':120},
-  'フェリー':{'北海道':480,'東北':360,'関東':300,'中部':300,'近畿':300,'中国':180,'四国':180,'九州':240,'沖縄':120,'default':300}
-};
-
-// 移動手段ごとの駅・空港での待機時間（分）
-const CHECKIN_TIME={'飛行機':90,'新幹線':30,'レンタカー':40,'バス':20,'フェリー':60,'default':30};
-
-function getTravelMin(trans, region){
-  const tk=getTransKey(trans);
-  const map=TRAVEL_TIME[tk]||TRAVEL_TIME['新幹線'];
-  return map[region]||map['default'];
-}
-
-function buildPlan(dep,dur,themes,trans,dest,memo){
-  const dayMap={'日帰り（0泊1日）':1,'1泊2日':2,'2泊3日':3,'3泊4日':4,'4泊5日':5,'約1週間（6〜7日）':7};
-  const numDays=dayMap[dur]||2;
-
-  // 目的地・地方
-  let destination=dest||'';
-  if(!destination) destination=suggestDestination(dep,trans,numDays);
-  const region=getRegion(dep);
-  const tk=getTransKey(trans);
-  const travelMin=getTravelMin(trans,region);
-  const checkMin=CHECKIN_TIME[tk]||30;
-  const transLabel=trans.replace(/^.+\s/,'');
-
-  // 絵文字・キャッチコピー
-  const emojis=['✈️',...themes.slice(0,3).map(t=>EMOJI_MAP[t]||'🌟')].join('');
-  const catchcopy=rnd(CATCHCOPIES).replace('{dest}',destination);
-
-  const usedSpots=new Set();
-
-  // ---- ホテル情報（テーマ別おすすめ）----
-  const HOTEL_TYPES={
-    'グルメ':       {type:'グルメ旅向け旅館',     name:`${destination}の食を堪能できる宿`, price:'10,000〜15,000円/泊', point:'朝食・夕食が地元食材を使った料理'},
-    '自然・絶景':   {type:'絶景露天が自慢の宿',   name:`${destination}の自然に囲まれた宿`, price:'15,000〜25,000円/泊', point:'絶景ロケーション・天然温泉あり'},
-    'カフェ巡り':   {type:'デザイナーズホテル',   name:`${destination}のおしゃれホテル`,    price:'8,000〜14,000円/泊', point:'インスタ映えロビー・朝食が充実'},
-    '歴史・文化':   {type:'老舗旅館・歴史的宿',   name:`${destination}の趣ある旅館`,       price:'12,000〜20,000円/泊', point:'歴史的建築・和室・浴衣でくつろげる'},
-    'インスタ映え': {type:'フォトジェニックホテル', name:`${destination}のデザインホテル`,  price:'10,000〜18,000円/泊', point:'おしゃれな内装・映えスポットが館内にも'},
-    '温泉・癒し':   {type:'温泉旅館',             name:`${destination}の温泉宿`,           price:'15,000〜30,000円/泊', point:'源泉かけ流し・露天風呂付き客室あり'},
-    'アクティビティ':{type:'リゾートホテル',      name:`${destination}のリゾート系ホテル`, price:'10,000〜20,000円/泊', point:'アクティビティ手配サービスあり'},
-    'ショッピング':  {type:'駅近シティホテル',     name:`${destination}の便利なホテル`,     price:'7,000〜12,000円/泊', point:'繁華街まで徒歩圏内・荷物預かりOK'},
-    'アニメ・ポップカルチャー':{type:'ユニークテーマホテル', name:`${destination}のユニークな宿`, price:'6,000〜12,000円/泊', point:'聖地・ショップへのアクセス良好'},
-    '夜景・バー':   {type:'夜景が見える高層ホテル', name:`${destination}のビューホテル`,   price:'12,000〜25,000円/泊', point:'高層階からの夜景・バーラウンジ併設'},
-  };
-  const hotel = HOTEL_TYPES[themes[0]] || {type:'快適なビジネスホテル', name:`${destination}の人気ホテル`, price:'8,000〜15,000円/泊', point:'駅近・清潔・コスパ良し'};
-
-  // ---- 1日目：出発 → 移動 → 現地 → ホテルチェックイン ----
-  function buildDay1(){
-    const departTime='07:30';
-    const checkinDone=addMin(departTime, checkMin);
-    const arriveTime=addMin(checkinDone, travelMin);
-    const lunchTime=addMin(arriveTime, 30);
-    const pm1=addMin(lunchTime, 90);
-    const hotelCheckin='15:00'; // 一般的なチェックイン時間
-    const dinnerTime='18:30';
-
-    const theme=themes[0];
-    const db=DB[theme]||DB['グルメ'];
-    const spotsForDay1=getSpots(destination,theme);
-    function spot(){ const a=spotsForDay1.filter(s=>!usedSpots.has(s)); const s=rnd(a.length?a:spotsForDay1); usedSpots.add(s); return s; }
-
-    const departDesc={
-      '飛行機':`空港に集合！荷物を預けて搭乗口へ。いよいよ${destination}へ出発✈️`,
-      '新幹線':`駅に集合！指定席に乗り込んで${destination}へ出発🚄`,
-      'レンタカー':`レンタカーを受け取って出発！カーナビをセットして${destination}へ🚗`,
-      'バス':`バス乗り場に集合。座席でのんびり過ごしながら${destination}へ🚌`,
-      'フェリー':`フェリーターミナルに集合。乗船手続きを済ませて出港🚢`,
-    };
-    const arriveDesc={
-      '飛行機':`${destination}空港に到着！荷物を受け取って市内へ移動`,
-      '新幹線':`${destination}駅に到着！まずは荷物をホテルへ預けよう`,
-      'レンタカー':`${destination}エリアに到着！ホテルへ直行して荷物を預けよう`,
-      'バス':`${destination}バスターミナルに到着。さあ旅のスタート！`,
-      'フェリー':`${destination}港に到着！上陸して市内へ移動`,
-    };
-
-    return{
-      day:'1日目（出発日）',
-      title:'いざ出発！移動して現地へ',
-      schedule:[
-        {time:departTime,     place:`${dep}・出発`,              description:departDesc[transLabel]||`${transLabel}で${destination}へ出発！`,  tags:['移動','出発'],  isTravel:true},
-        {time:arriveTime,     place:`${destination}・到着`,       description:arriveDesc[transLabel]||`${destination}に到着！`,                 tags:['到着'],         isTravel:true},
-        {time:lunchTime,      place:`${destination}・${spot()}`,  description:`到着後のお楽しみランチ！${destination}の名物を食べよう`,           tags:[theme,'ランチ']},
-        {time:pm1,            place:`${destination}・${spot()}`,  description:rnd(db.mid),                                                      tags:[theme]},
-        {time:hotelCheckin,   place:`🏨 ${hotel.name}`,           description:`ホテルにチェックイン！（${hotel.type}・${hotel.price}）${hotel.point}`, tags:['ホテル','チェックイン'], isHotel:true},
-        {time:dinnerTime,     place:`${destination}・${spot()}`,  description:rnd(db.pm),                                                       tags:[theme,'ディナー']},
-      ]
-    };
-  }
-
-  // ---- 中間日：朝食（ホテル）→ フル観光 → ホテル泊 ----
-  function buildMidDay(di){
-    const theme=themes[di%themes.length];
-    const db=DB[theme]||DB['グルメ'];
-    const spotsForMid=getSpots(destination,theme);
-    function spot(){ const a=spotsForMid.filter(s=>!usedSpots.has(s)); const s=rnd(a.length?a:spotsForMid); usedSpots.add(s); return s; }
-    return{
-      day:`${di+1}日目`,
-      title:rnd(['丸一日たっぷり観光','地元の魅力を全力満喫','テーマを深掘りする日']),
-      schedule:[
-        {time:'07:30', place:`🏨 ${hotel.name}（朝食）`,         description:`ホテルの朝食でエネルギー補給！今日も一日楽しむぞ`,               tags:['ホテル','朝食'], isHotel:true},
-        {time:'09:00', place:`${destination}・${spot()}`,         description:rnd(db.am),   tags:[theme]},
-        {time:'11:00', place:`${destination}・${spot()}`,         description:rnd(db.am),   tags:[theme]},
-        {time:'13:00', place:`${destination}・${spot()}`,         description:rnd(db.mid),  tags:[theme,'ランチ']},
-        {time:'15:30', place:`${destination}・${spot()}`,         description:rnd(db.mid),  tags:[theme]},
-        {time:'19:00', place:`${destination}・${spot()}`,         description:rnd(db.pm),   tags:[theme,'ディナー']},
-        {time:'21:00', place:`🏨 ${hotel.name}（就寝）`,          description:`ホテルに戻って明日に備えてゆっくり休もう`,                       tags:['ホテル'],       isHotel:true},
-      ]
-    };
-  }
-
-  // ---- 最終日：朝食 → チェックアウト → 観光 → 帰路 ----
-  function buildLastDay(di){
-    const theme=themes[di%themes.length];
-    const db=DB[theme]||DB['グルメ'];
-    const spotsForLast=getSpots(destination,theme);
-    function spot(){ const a=spotsForLast.filter(s=>!usedSpots.has(s)); const s=rnd(a.length?a:spotsForLast); usedSpots.add(s); return s; }
-
-    const homeTarget=21*60;
-    const departLocal=homeTarget-travelMin-checkMin;
-    const departLocalStr=`${String(Math.floor(departLocal/60)).padStart(2,'0')}:${String(departLocal%60).padStart(2,'0')}`;
-    const checkoutTime='10:00';
-    const lunchTime=addMin(checkoutTime, 90);
-    const souvenir=addMin(lunchTime, 60);
-
-    const returnDesc={
-      '飛行機':`空港へ移動して帰りのフライトへ。お土産は空港で最終チェック✈️`,
-      '新幹線':`駅へ移動して帰りの新幹線に乗車。お疲れさまでした🚄`,
-      'レンタカー':`レンタカーを返却して帰路へ。楽しい旅をありがとう🚗`,
-      'バス':`バス乗り場へ移動して帰りのバスに乗車🚌`,
-      'フェリー':`フェリーターミナルへ移動して乗船。また来ようね🚢`,
-    };
-
-    return{
-      day:`${di+1}日目（最終日）`,
-      title:'チェックアウトして最後まで楽しもう！',
-      schedule:[
-        {time:'07:30',       place:`🏨 ${hotel.name}（朝食）`,  description:`最後のホテル朝食をゆっくり味わおう`,                              tags:['ホテル','朝食'], isHotel:true},
-        {time:checkoutTime,  place:`🏨 ${hotel.name}（チェックアウト）`, description:`チェックアウト！荷物を預けてもう少し観光しよう`,          tags:['ホテル','チェックアウト'], isHotel:true},
-        {time:lunchTime,     place:`${destination}・${spot()}`, description:`最後のランチ！${destination}の味をもう一度堪能`,                   tags:[theme,'ランチ']},
-        {time:souvenir,      place:`${destination}・${spot()}`, description:`お土産を買いつつ最後の散策`,                                       tags:['お土産']},
-        {time:departLocalStr,place:`${dep}へ帰路`,              description:returnDesc[transLabel]||`${transLabel}で${dep}へ帰宅`,              tags:['移動','帰路'],  isTravel:true},
-      ]
-    };
-  }
-
-  // 日程を組み立て
-  let days=[];
-  if(numDays===1){
-    const theme=themes[0];
-    const db=DB[theme]||DB['グルメ'];
-    const spotsForTrip=getSpots(destination,theme);
-    function spot(){ const a=spotsForTrip.filter(s=>!usedSpots.has(s)); const s=rnd(a.length?a:spotsForTrip); usedSpots.add(s); return s; }
-    const departTime='07:00';
-    const arriveTime=addMin(departTime,checkMin+travelMin);
-    const backDepart=addMin('21:00',-(travelMin+checkMin));
-    days=[{
-      day:'本日（日帰り）',
-      title:'日帰りで全力満喫！',
-      schedule:[
-        {time:departTime,              place:`${dep}・出発`,             description:`${transLabel}で${destination}へ日帰り出発！`,       tags:['移動','出発'],  isTravel:true},
-        {time:arriveTime,              place:`${destination}・到着`,      description:`${destination}に到着！早速観光スタート`,             tags:['到着'],         isTravel:true},
-        {time:addMin(arriveTime,30),   place:`${destination}・${spot()}`, description:rnd(db.am),                                         tags:[theme]},
-        {time:addMin(arriveTime,130),  place:`${destination}・${spot()}`, description:rnd(db.mid),                                        tags:[theme,'ランチ']},
-        {time:addMin(arriveTime,240),  place:`${destination}・${spot()}`, description:rnd(db.mid),                                        tags:[theme]},
-        {time:backDepart,              place:`${dep}へ帰路`,              description:`帰りの${transLabel}に乗車。楽しい一日だった！`,      tags:['移動','帰路'],  isTravel:true},
-      ]
-    }];
-  } else {
-    days.push(buildDay1());
-    for(let di=1;di<numDays-1;di++) days.push(buildMidDay(di));
-    days.push(buildLastDay(numDays-1));
-  }
-
-  const tips=[
-    ...DB[themes[0]]?.tips||['荷物は必要最低限に','予備の現金を持っておこう'],
-    `${transLabel}の予約は早めに！特に繁忙期は要注意`
-  ].slice(0,3);
-
-  return{destination,catchcopy,emoji:emojis,days,tips};
-}
-
-/* ===== SUBMIT ===== */
-async function onSubmit(){
-  const dep=document.getElementById('f-dep').value.trim();
-  const dur=document.getElementById('f-dur').value;
-  const themes=[...document.querySelectorAll('.pill.on')].map(p=>p.dataset.v);
-  const trans=(document.querySelector('.tp.on')||{}).dataset?.v||'';
-  const dest=document.getElementById('f-dest').value.trim();
-  const memo=document.getElementById('f-memo').value.trim();
-
-  document.getElementById('errMsg').classList.remove('show');
-  if(!dep){showErr('📍 出発地を入力してください！');return;}
-  if(!dur){showErr('🗓️ 旅の期間を選んでください！');return;}
-  if(!themes.length){showErr('🎨 テーマを1つ以上選んでください！');return;}
-  if(!trans){showErr('🚗 移動方法を選んでください！');return;}
-
-  document.getElementById('formCard').style.display='none';
-  document.getElementById('loading').classList.add('show');
-  startMsgs();
-
-  // ローディング演出後にプラン生成
-  await new Promise(r=>setTimeout(r,2400));
-  const plan=buildPlan(dep,dur,themes,trans,dest,memo);
-  stopMsgs();
-  document.getElementById('loading').classList.remove('show');
-  renderShiori(plan,{dep,dur,themes,trans});
-  document.getElementById('shiori').classList.add('show');
-}
-
-function showErr(msg){
-  const el=document.getElementById('errMsg');
-  el.textContent=msg;el.classList.add('show');
-}
-
-/* ===== RENDER ===== */
-function renderShiori(d,meta){
-  let html=`<div class="s-cover">
-    <div class="s-cover-title">旅のしおり</div>
-    <div class="s-cover-sub">My Travel Notebook</div>
-    <div class="s-emoji">${d.emoji||'✈️🌟🗺️'}</div>
-    <div class="s-dest">${esc(d.destination)}</div>
-    <div class="s-copy">"${esc(d.catchcopy)}"</div>
-    <div class="s-badges">
-      <span class="badge">📍 ${esc(meta.dep)}発</span>
-      <span class="badge">📅 ${esc(meta.dur)}</span>
-      <span class="badge">${esc(meta.trans)}</span>
-    </div>
-    <div class="s-badges" style="margin-top:7px;">
-      ${meta.themes.map(t=>`<span class="badge theme">${esc(t)}</span>`).join('')}
-    </div>
-  </div>
-  <div class="s-body">`;
-
-  (d.days||[]).forEach((day,di)=>{
-    const c=COLORS[di%COLORS.length];
-    html+=`<div class="day-block">
-      <div class="day-head">
-        <span class="day-label" style="background:linear-gradient(135deg,${c.b},${c.b}bb)">${esc(day.day)}</span>
-        <span class="day-ttl">${esc(day.title)}</span>
+  return `<div class="top">
+    <div class="ticker-wrap"><div class="ticker-inner">${t}</div></div>
+    <div class="top-hero">
+      <span class="top-label">GENERATION TEST</span>
+      <div class="top-title">世代<em>バレ</em><br>診断</div>
+      <div class="top-sub">12問答えるだけで「あなたの魂が生きてる年代」が判明。<br>世代がバレます。覚悟して。</div>
+      <div class="era-row">
+        ${chips.map(c=>`<div class="era-chip"><span class="era-chip-num">${c.e}</span>${c.y}</div>`).join('')}
       </div>
-      <div class="timeline">
-        <div class="tl-line" style="background:linear-gradient(to bottom,${c.b}88,${c.b}22)"></div>`;
+    </div>
+    <div class="top-body">
+      <div class="notice-box">
+        <strong>⚠️ 注意</strong>：このテストは正直に答えると<strong>かなり世代がバレます</strong>。<br>嘘をつくと正確な診断が出ません。
+      </div>
+      <button class="btn-start" id="btn-start"><span>診断スタート →</span></button>
+      <div class="q-info">全12問 · 約1〜2分 · SNSシェア対応</div>
+    </div>
+  </div>`;
+}
 
-    (day.schedule||[]).forEach(item=>{
-      const isTravel=item.isTravel;
-      const isHotel=item.isHotel;
-      const cardBg=isTravel?'#eef2ff':isHotel?'#fff8ee':c.bg;
-      const cardBorder=isTravel?'#6080d0':isHotel?'#e0a030':c.b;
-      const dotBg=isTravel?'#6080d0':isHotel?'#e0a030':c.b;
-      html+=`<div class="tl-item">
-        <div class="tl-dot" style="background:${dotBg}"></div>
-        <div class="tl-time" style="color:${dotBg}">⏰ ${esc(item.time)}</div>
-        <div class="act-card" style="background:${cardBg};border-left-color:${cardBorder};border-left-width:${isTravel||isHotel?'4px':'3px'};">
-          <div class="act-name">${esc(item.place)}</div>
-          <div class="act-desc">${esc(item.description)}</div>
-          ${(item.tags||[]).length?`<div class="act-tags">${item.tags.map(t=>`<span class="act-tag" style="color:${cardBorder};border-color:${cardBorder}44;background:${cardBg}">${esc(t)}</span>`).join('')}</div>`:''}
+function rQuiz(){
+  const q=Qs[st.cur];
+  const pct=(st.cur/Qs.length)*100;
+  const letters=['A','B','C','D'];
+  const opts=q.opts.map((o,i)=>`
+    <button class="opt${st.sel===i?' sel':''}" data-i="${i}">
+      <span class="opt-key">${letters[i]}</span><span>${esc(o.t)}</span>
+    </button>`).join('');
+  return `<div class="quiz">
+    <div class="quiz-top">
+      <div class="prog-row">
+        <span class="prog-label">QUESTION</span>
+        <span class="prog-count">${st.cur+1} / ${Qs.length}</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="q-body">
+      <div class="q-era-hint">${q.hint}</div>
+      <div class="q-text">${esc(q.q)}</div>
+      ${q.sub?`<div class="q-sub">${esc(q.sub)}</div>`:''}
+    </div>
+    <div class="opts">${opts}</div>
+  </div>`;
+}
+
+function rResult(){
+  const top=Object.entries(st.scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const t=ERAS[top];
+  const totalScore=Object.values(st.scores).reduce((a,b)=>a+b,0)||1;
+
+  // バー（スコア正規化）
+  const maxBar=Math.max(...Object.values(t.bars));
+  const barRows=Object.entries(ERA_LABELS).map(([k,label])=>`
+    <div class="era-bar-row">
+      <span class="era-bar-label">${label}</span>
+      <div class="era-bar-track">
+        <div class="era-bar-fill" id="bar-${k}" style="width:0;background:${ERA_COLORS[k]}"></div>
+      </div>
+      <span class="era-bar-pct">${t.bars[k]}%</span>
+    </div>`).join('');
+
+  const arList=t.araru.map(a=>`
+    <div class="aruary-item">
+      <span class="aruary-check">✓</span><span>${esc(a)}</span>
+    </div>`).join('');
+
+  return `<div class="result">
+    <div class="res-card">
+      <div class="res-card-bg" style="background:linear-gradient(160deg,${t.dark} 0%,#0e0e0e 100%);border-bottom:2px solid ${t.color}">
+        <div class="res-year-big" style="color:${t.color}">${t.year}</div>
+        <div class="res-year-sub">YOUR SOUL'S GENERATION</div>
+        <div class="res-badge" style="color:${t.color};border-color:${t.color}55;background:${t.dark}">
+          ${t.emoji} ${t.label}
         </div>
-      </div>`;
-    });
-    html+=`</div></div>`;
-    if(di<(d.days||[]).length-1) html+=`<div class="divider">✦ ✦ ✦</div>`;
+        <div class="res-desc-card">
+          <div class="res-desc-text">${t.desc}</div>
+        </div>
+      </div>
+
+      <div style="padding:20px 24px 0">
+        <div class="era-meter">
+          <div class="era-meter-title">世代スコア分布</div>
+          ${barRows}
+        </div>
+      </div>
+    </div>
+
+    <div class="aruary">
+      <div class="aruary-title">あなた世代のあるある</div>
+      <div class="aruary-list">${arList}</div>
+    </div>
+
+    <div class="res-tags">
+      ${t.tags.map(tag=>`<span class="res-tag">${esc(tag)}</span>`).join('')}
+    </div>
+
+    <div class="res-actions">
+      <button class="btn-copy" id="btn-copy"><span>📋 結果をコピーしてシェア</span></button>
+      <button class="btn-retry" id="btn-retry">↺ もう一度やる</button>
+    </div>
+  </div>`;
+}
+
+/* ===================================================
+   アニメ
+=================================================== */
+function animBars(){
+  const top=Object.entries(st.scores).sort((a,b)=>b[1]-a[1])[0][0];
+  const t=ERAS[top];
+  Object.entries(t.bars).forEach(([k,v],i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById('bar-'+k);
+      if(el) el.style.width=v+'%';
+    },150+i*120);
+  });
+}
+
+/* ===================================================
+   Bind
+=================================================== */
+function bind(){
+  const s=document.getElementById('btn-start');
+  if(s) s.onclick=()=>S({screen:'quiz',cur:0,scores:{g80:0,g90:0,g00:0,g10:0,g20:0},sel:null});
+
+  document.querySelectorAll('.opt[data-i]').forEach(btn=>{
+    btn.onclick=()=>{
+      if(st.sel!==null)return;
+      const i=parseInt(btn.dataset.i);
+      const sc=Qs[st.cur].opts[i].s;
+      const ns=Object.fromEntries(Object.entries(st.scores).map(([k,v])=>[k,v+(sc[k]||0)]));
+      S({sel:i});
+      setTimeout(()=>{
+        if(st.cur+1>=Qs.length){S({scores:ns,screen:'result'});setTimeout(animBars,200);}
+        else S({scores:ns,cur:st.cur+1,sel:null});
+      },320);
+    };
   });
 
-  if((d.tips||[]).length){
-    html+=`<div class="tips-box">
-      <div class="tips-title">💡 旅のヒント・持ち物チェック</div>
-      ${d.tips.map(t=>`<div class="tip-row">• ${esc(t)}</div>`).join('')}
-    </div>`;
-  }
-  html+=`<div class="s-footer">✈️ 🌟 良い旅を！ 🌟 ✈️</div>
-    <div class="s-credit">created by tabisora</div>
-  </div>`;
-  document.getElementById('shioriContent').innerHTML=html;
+  const rt=document.getElementById('btn-retry');
+  if(rt) rt.onclick=()=>S({screen:'top',cur:0,scores:{g80:0,g90:0,g00:0,g10:0,g20:0},sel:null});
+
+  const cp=document.getElementById('btn-copy');
+  if(cp) cp.onclick=()=>{
+    const top=Object.entries(st.scores).sort((a,b)=>b[1]-a[1])[0][0];
+    const t=ERAS[top];
+    const txt=`【世代バレ診断】\n\n私の魂の世代は…\n${t.emoji} ${t.year}（${t.label}）\n\n${t.desc.slice(0,60)}…\n\n${t.tags.slice(0,3).join(' ')}\n#世代バレ診断 #SNS診断`;
+    navigator.clipboard.writeText(txt)
+      .then(()=>toast('COPIED! 📋'))
+      .catch(()=>toast('手動でコピーしてね 😅'));
+  };
+
+  if(document.querySelector('.result')) setTimeout(animBars,200);
 }
 
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-function goBack(){
-  document.getElementById('shiori').classList.remove('show');
-  document.getElementById('shioriContent').innerHTML='';
-  document.getElementById('formCard').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2400);
 }
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+render();
 </script>
 </body>
 </html>
